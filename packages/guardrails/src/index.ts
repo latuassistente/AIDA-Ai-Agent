@@ -24,3 +24,6 @@ export interface AuditEvent {
   decision: "ALLOWED" | "BLOCKED" | "APPROVAL_REQUIRED" | "HUMAN_HANDOFF";
   createdAt: string;
 }
+
+export * from "./policy";
+export * from "./audit";
