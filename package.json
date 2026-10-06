@@ -6,9 +6,19 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate",
+    "db:migrate:dev": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "prisma": "^6.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0",
+    "eslint": "^9.0.0"
   }
 }
