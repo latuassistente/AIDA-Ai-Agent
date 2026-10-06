@@ -36,7 +36,7 @@ export class PolicyEngine {
   }
 }
 
-export function minimumRisk(a: RiskLevel, b: RiskLevel): RiskLevel {
+export function highestRisk(a: RiskLevel, b: RiskLevel): RiskLevel {
   const order: Record<RiskLevel, number> = { GREEN: 0, YELLOW: 1, RED: 2 };
   return order[a] >= order[b] ? a : b;
 }
