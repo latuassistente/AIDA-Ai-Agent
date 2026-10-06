@@ -35,3 +35,21 @@ Repository iniziale: architettura e contratti fondamentali. Le integrazioni oper
 ## Regola fondamentale
 
 AIDA non deve inventare informazioni operative critiche. Se una risposta non può essere verificata dalla Knowledge Base, dalle regole commerciali o da una fonte autorizzata, deve dichiarare l'incertezza e attivare il livello di controllo previsto.
+
+## Implementato nella fondazione runtime
+
+- Goal lifecycle service con transizioni di stato e isolamento per tenant
+- Orchestrator, planner, registry agenti e registry strumenti
+- Policy engine con default-deny quando manca una regola esplicita
+- Gate di approvazione per strumenti YELLOW e handoff umano per strumenti RED
+- Audit sink in memoria e adapter PostgreSQL/Prisma
+- Event bus in memoria
+- Knowledge provider iniziale con filtro tenant e documenti attivi
+- Schema PostgreSQL/Prisma per tenant, clienti, progetti, goal, step, knowledge, approvazioni, audit e messaggi unificati
+- Test iniziali per goal lifecycle, isolamento tenant e gate degli strumenti
+- GitHub Actions per validazione schema, generazione Prisma, typecheck e test
+
+## Stato e limiti attuali
+
+Questa è una base di sviluppo, non ancora un prodotto pronto per clienti. Gli adapter in memoria servono per test e sviluppo; prima della produzione vanno configurati database e segreti, eseguite migrazioni, verificate le pipeline CI e implementate le integrazioni ufficiali dei canali. Non sono ancora collegate caselle email, WhatsApp, Messenger, Instagram, TikTok, telefonia, calendari o provider LLM.
+
