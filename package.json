@@ -9,7 +9,10 @@
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
-    "db:migrate:dev": "prisma migrate dev"
+    "db:migrate:dev": "prisma migrate dev",
+    "dev:web": "pnpm --filter @aida/web dev",
+    "build:web": "pnpm --filter @aida/web build",
+    "start:web": "pnpm --filter @aida/web start"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
