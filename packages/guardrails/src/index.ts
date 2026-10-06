@@ -27,3 +27,4 @@ export interface AuditEvent {
 
 export * from "./policy";
 export * from "./audit";
+export * from "./approval-service";
