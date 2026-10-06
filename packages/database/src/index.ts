@@ -2,3 +2,4 @@ export * from "./client";
 export * from "./prisma-goal-store";
 export * from "./prisma-audit-sink";
 export * from "./prisma-knowledge-provider";
+export * from "./prisma-approval-store";
