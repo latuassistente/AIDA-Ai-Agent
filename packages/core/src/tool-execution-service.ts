@@ -36,7 +36,7 @@ export class ToolExecutionService {
       tenantId: context.tenantId,
       actor: context.actor,
       action: tool.id,
-      target: context.projectId,
+      ...(context.projectId ? { target: context.projectId } : {}),
       payload: input,
       riskLevel: tool.riskLevel,
     });
