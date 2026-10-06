@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import type { ProjectBrain } from "../../crm/src/project-brain";
 import type { ProjectBrainStore } from "../../crm/src/project-brain-store";
 
@@ -8,7 +8,7 @@ export class PrismaProjectBrainStore implements ProjectBrainStore {
   async save(brain: ProjectBrain): Promise<void> {
     const result = await this.db.project.updateMany({
       where: { id: brain.projectId, tenantId: brain.tenantId, customerId: brain.customerId },
-      data: { brain: brain as unknown as object, stage: brain.stage },
+      data: { brain: brain as unknown as Prisma.InputJsonValue, stage: brain.stage },
     });
     if (result.count !== 1) throw new Error("Project not found for this tenant/customer.");
   }
