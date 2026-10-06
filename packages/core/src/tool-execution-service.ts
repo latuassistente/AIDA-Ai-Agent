@@ -52,17 +52,6 @@ export class ToolExecutionService {
       };
     }
 
-    if (decision.requiresApproval || tool.riskLevel === "YELLOW") {
-      await this.writeAudit(context, tool.id, "APPROVAL_REQUIRED");
-      return {
-        ok: true,
-        riskLevel: "YELLOW",
-        requiresApproval: true,
-        requiresHuman: false,
-        nextAction: `Approval required for tool: ${tool.id}`,
-      };
-    }
-
     if (tool.riskLevel === "RED") {
       await this.writeAudit(context, tool.id, "HUMAN_HANDOFF");
       return {
@@ -71,6 +60,17 @@ export class ToolExecutionService {
         requiresApproval: false,
         requiresHuman: true,
         errors: ["RED-risk actions require a human operator."],
+      };
+    }
+
+    if (decision.requiresApproval || tool.riskLevel === "YELLOW") {
+      await this.writeAudit(context, tool.id, "APPROVAL_REQUIRED");
+      return {
+        ok: true,
+        riskLevel: "YELLOW",
+        requiresApproval: true,
+        requiresHuman: false,
+        nextAction: `Approval required for tool: ${tool.id}`,
       };
     }
 
