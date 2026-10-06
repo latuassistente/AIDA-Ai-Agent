@@ -112,7 +112,7 @@ model KnowledgeChunk {
   chunkIndex  Int
   content     String
   metadata    Json?
-  embedding   Unsupported("vector(1536)")?
+  embedding   Json?
   document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
   @@unique([documentId, chunkIndex])
   @@index([documentId])
