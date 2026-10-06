@@ -49,6 +49,10 @@ AIDA non deve inventare informazioni operative critiche. Se una risposta non pu�
 - Test iniziali per goal lifecycle, isolamento tenant e gate degli strumenti
 - GitHub Actions per validazione schema, generazione Prisma, typecheck e test
 
+## Interfaccia iniziale
+
+È presente una prima dashboard Next.js in `apps/web`: panoramica dei moduli, stato dello sviluppo, prossima fase e avvisi sulle integrazioni non ancora attive. È una control center iniziale, non ancora una console operativa collegata a tutte le funzioni.
+
 ## Stato e limiti attuali
 
 Questa è una base di sviluppo, non ancora un prodotto pronto per clienti. Gli adapter in memoria servono per test e sviluppo; prima della produzione vanno configurati database e segreti, eseguite migrazioni, verificate le pipeline CI e implementate le integrazioni ufficiali dei canali. Non sono ancora collegate caselle email, WhatsApp, Messenger, Instagram, TikTok, telefonia, calendari o provider LLM.
