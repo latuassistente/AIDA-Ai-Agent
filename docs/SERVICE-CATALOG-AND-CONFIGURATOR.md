@@ -8,7 +8,7 @@ Il prodotto SaaS derivato deve essere modulare, personalizzabile, vendibile e wh
 
 ## Stato verificato del repository
 
-Il repository contiene una fondazione tecnica, un registro predefinito di 31 agenti specialistici, un catalogo tipizzato di servizi, controlli di configurazione per piano/dipendenze e test automatici iniziali. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
+Il repository contiene una fondazione tecnica, un registro predefinito di 33 agenti specialistici, un catalogo tipizzato di servizi, controlli di configurazione per piano/dipendenze e test automatici iniziali. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
 
 ## Aree del catalogo
 
@@ -54,6 +54,8 @@ Ogni voce di catalogo deve dichiarare almeno:
 Prezzi, quote e limiti devono provenire da configurazioni amministrative versionate, non essere inventati dall'agente.
 
 ## Configuratore SaaS
+
+Le responsabilità esistenti vengono estese quando coprono già un compito (ad esempio social media dentro Content, segreteria dentro Business Operations, workflow dentro Software and Automation). Document and Records e Legal Support sono specialisti distinti perché il roster precedente non conteneva ruoli dedicati.
 
 Il configuratore deve consentire di selezionare servizi singoli o pacchetti, visualizzare prerequisiti e dipendenze, stimare costi/consumi, abilitare/disabilitare moduli e configurare permessi. Deve distinguere chiaramente:
 
@@ -105,7 +107,7 @@ Il risultato deve essere una configurazione leggibile con riepilogo funzionale, 
 
 ## Team di agenti
 
-Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 31 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Human Handoff ed Execution.
+Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 31 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Document and Records, Legal Support, Human Handoff ed Execution.
 
 Orchestrator e Planner sono componenti centrali di coordinamento, non specialisti autonomi in concorrenza tra loro. Gli specialisti non ridefiniscono l'obiettivo globale: ricevono un incarico delimitato, producono risultati strutturati e restituiscono evidenze al coordinatore.
 
