@@ -1,4 +1,4 @@
-# AIDA — AI Agent Platform
+# AIDA AI Agent — AI Agent Platform
 
 AIDA è una piattaforma agentica orientata agli obiettivi: trasforma un obiettivo imprenditoriale in un processo completo di analisi, pianificazione, creazione, comunicazione, vendita, delivery, supporto e ottimizzazione.
 
@@ -48,6 +48,12 @@ AIDA non deve inventare informazioni operative critiche. Se una risposta non pu�
 - Schema PostgreSQL/Prisma per tenant, clienti, progetti, goal, step, knowledge, approvazioni, audit e messaggi unificati
 - Test iniziali per goal lifecycle, isolamento tenant e gate degli strumenti
 - GitHub Actions per validazione schema, generazione Prisma, typecheck e test
+
+## Catalogo agenti e servizi
+
+Il catalogo predefinito contiene 29 definizioni di agenti specialistici, registrabili nel runtime con `createDefaultAgentRegistry()`. Le definizioni con ID esistente vengono aggiornate; gli agenti mancanti vengono aggiunti senza duplicati. La registrazione definisce identità e capacità dichiarate, non sostituisce l'implementazione degli strumenti e delle integrazioni esterne.
+
+Il catalogo e il configuratore SaaS sono descritti in `docs/SERVICE-CATALOG-AND-CONFIGURATOR.md`. Lo stato delle integrazioni deve essere verificato separatamente: le capacità pianificate non vanno presentate come operative.
 
 ## Interfaccia iniziale
 
