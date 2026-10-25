@@ -11,7 +11,7 @@ describe("AIDA modular service catalog", () => {
   });
 
   it("marks external integrations as planned until they are implemented and verified", () => {
-    for (const id of ["communications.whatsapp", "communications.email", "voice.telephony", "integration.api"]) {
+    for (const id of ["communications.whatsapp", "communications.email", "voice.telephony", "integration.api", "find.discovery", "booking.reservations"]) {
       expect(serviceCatalog.find((service) => service.id === id)?.status).toBe("planned");
     }
   });
@@ -31,5 +31,7 @@ describe("AIDA modular service catalog", () => {
     expect(serviceCatalog.some((service) => service.id === "web.presentation")).toBe(true);
     expect(serviceCatalog.some((service) => service.id === "web.experience-3d")).toBe(true);
     expect(serviceCatalog.some((service) => service.id === "web.experience-4d")).toBe(true);
+    expect(serviceCatalog.find((service) => service.id === "find.discovery")?.agentId).toBe("find");
+    expect(serviceCatalog.find((service) => service.id === "booking.reservations")?.agentId).toBe("booking");
   });
 });
