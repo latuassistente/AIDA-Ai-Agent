@@ -1,4 +1,5 @@
 export * from "./catalog";
+export * from "./service-catalog";
 
 import { InMemoryAgentRegistry } from "../../core/src/agent-registry";
 import { registerDefaultAgents } from "./catalog";
