@@ -42,7 +42,13 @@ Orchestrator e Planner sono componenti centrali del runtime: non devono essere d
 31. Security and Compliance Agent — sicurezza, permessi e conformità
 32. Human Handoff Agent — preparazione del contesto e trasferimento a una persona
 33. Execution Agent — esecuzione di strumenti registrati e autorizzati
-Il roster contiene 33 agenti specialistici; le capacità dei ruoli esistenti sono state ampliate dove i compiti coincidevano, senza creare duplicati per social media, segreteria, workflow, CRM/vendite, marketing, customer care, telefonia, analytics, recruiting, finanza e knowledge. Sono stati aggiunti soltanto Document and Records e Legal Support, perché non erano presenti come ruoli dedicati.
+34. Prompt Engineering Agent — progettazione, versionamento e test dei prompt
+35. Translation and Localization Agent — traduzione, glossari, localizzazione e controllo terminologico
+36. Backup and Recovery Agent — verifica evidenze di backup e coordinamento dei test di ripristino
+37. Agent Quality and Oversight Agent — valutazione degli output, permessi, regressioni ed escalation degli agenti
+38. Proactive Monitoring and Alerts Agent — controlli autorizzati, correlazione, priorità e deduplicazione degli alert
+
+Il roster runtime contiene 38 agenti specialistici. Le responsabilità già coperte vengono integrate nei ruoli esistenti; sono stati aggiunti soltanto specialisti con responsabilità distinte. Orchestrator e Planner restano componenti centrali e non sono duplicati come specialisti.
 
 La fonte tecnica del roster è `packages/agents/src/catalog.ts`. Il catalogo servizi è in `packages/agents/src/service-catalog.ts`.
 
