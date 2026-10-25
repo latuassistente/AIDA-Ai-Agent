@@ -8,7 +8,7 @@ Il prodotto SaaS derivato deve essere modulare, personalizzabile, vendibile e wh
 
 ## Stato verificato del repository
 
-Il repository contiene una fondazione tecnica, un registro predefinito di 33 agenti specialistici, un catalogo tipizzato di servizi, controlli di configurazione per piano/dipendenze e test automatici iniziali. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
+Il repository contiene un registro predefinito di 38 agenti specialistici, un catalogo tipizzato di 47 servizi e un configuratore con risoluzione ricorsiva delle dipendenze, controllo del piano, policy allow/deny per tenant e stato di pausa. I test dedicati verificano unicità, riferimenti, dipendenze, autorizzazioni e classificazione dello stato. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
 
 ## Aree del catalogo
 
@@ -107,7 +107,7 @@ Il risultato deve essere una configurazione leggibile con riepilogo funzionale, 
 
 ## Team di agenti
 
-Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 33 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Document and Records, Legal Support, Human Handoff ed Execution.
+Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 38 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Document and Records, Legal Support, Human Handoff, Execution, Prompt Engineering, Translation and Localization, Backup and Recovery, Agent Quality and Oversight e Proactive Monitoring and Alerts.
 
 Orchestrator e Planner sono componenti centrali di coordinamento, non specialisti autonomi in concorrenza tra loro. Gli specialisti non ridefiniscono l'obiettivo globale: ricevono un incarico delimitato, producono risultati strutturati e restituiscono evidenze al coordinatore.
 
