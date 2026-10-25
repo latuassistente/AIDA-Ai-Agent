@@ -11,7 +11,7 @@
 | 1 | AI, orchestrazione e conoscenza | `business-knowledge` | Business Knowledge Agent | Presente nel runtime (da verificare) |
 | 2 | AI, orchestrazione e conoscenza | `research` | Research Agent | Presente nel runtime (da verificare) |
 | 3 | AI, orchestrazione e conoscenza | `ai-model-routing` | AI Model Routing Agent | Da registrare e collegare |
-| 4 | AI, orchestrazione e conoscenza | `prompt-engineering` | Prompt Engineering Agent | Da registrare e collegare |
+| 4 | AI, orchestrazione e conoscenza | `prompt-engineering` | Prompt Engineering Agent | Presente nel runtime; strumenti e provider da verificare |
 | 5 | AI, orchestrazione e conoscenza | `memory-governance` | Memory Governance Agent | Da registrare e collegare |
 | 6 | AI, orchestrazione e conoscenza | `rag-retrieval` | RAG Retrieval Agent | Da registrare e collegare |
 | 7 | AI, orchestrazione e conoscenza | `knowledge-ingestion` | Knowledge Ingestion Agent | Da registrare e collegare |
@@ -136,7 +136,7 @@
 | 126 | Documenti, knowledge records e legale | `compliance-documentation` | Compliance Documentation Agent | Da registrare e collegare |
 | 127 | Documenti, knowledge records e legale | `signature-workflow` | Signature Workflow Agent | Da registrare e collegare |
 | 128 | Documenti, knowledge records e legale | `records-retention` | Records Retention Agent | Da registrare e collegare |
-| 129 | Documenti, knowledge records e legale | `translation-and-localization` | Translation and Localization Agent | Da registrare e collegare |
+| 129 | Documenti, knowledge records e legale | `translation-and-localization` | Translation and Localization Agent | Presente nel runtime; strumenti e provider da verificare |
 | 130 | Documenti, knowledge records e legale | `knowledge-documentation` | Knowledge Documentation Agent | Da registrare e collegare |
 | 131 | Finanza, amministrazione e acquisti | `finance-admin` | Finance and Administration Agent | Presente nel runtime (da verificare) |
 | 132 | Finanza, amministrazione e acquisti | `invoice-processing` | Invoice Processing Agent | Da registrare e collegare |
@@ -187,7 +187,7 @@
 | 177 | Integrazioni, IT e sicurezza | `consent-management` | Consent Management Agent | Da registrare e collegare |
 | 178 | Integrazioni, IT e sicurezza | `secret-management` | Secret Management Agent | Da registrare e collegare |
 | 179 | Integrazioni, IT e sicurezza | `audit-trail` | Audit Trail Agent | Da registrare e collegare |
-| 180 | Integrazioni, IT e sicurezza | `backup-and-recovery` | Backup and Recovery Agent | Da registrare e collegare |
+| 180 | Integrazioni, IT e sicurezza | `backup-and-recovery` | Backup and Recovery Agent | Presente nel runtime; strumenti e provider da verificare |
 | 181 | Sicurezza, rischio e governance AI | `human-handoff` | Human Handoff Agent | Presente nel runtime (da verificare) |
 | 182 | Sicurezza, rischio e governance AI | `execution` | Execution Agent | Presente nel runtime (da verificare) |
 | 183 | Sicurezza, rischio e governance AI | `policy-enforcement` | Policy Enforcement Agent | Da registrare e collegare |
