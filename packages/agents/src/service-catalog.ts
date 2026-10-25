@@ -83,3 +83,53 @@ export function validateServiceCatalog(): string[] {
   }
   return errors;
 }
+
+
+export interface ServiceConfigurationResult {
+  valid: boolean;
+  plan: string;
+  services: AidaServiceDefinition[];
+  automaticallyIncludedDependencies: string[];
+  errors: string[];
+}
+
+/**
+ * Resolves a selected service set for a subscription plan. Dependencies are
+ * included automatically only when they are available on that plan.
+ * This is configuration validation, not activation of external integrations.
+ */
+export function configureServices(
+  selectedServiceIds: string[],
+  plan: string,
+): ServiceConfigurationResult {
+  const errors: string[] = [];
+  const included = new Set<string>();
+  const explicit = new Set(selectedServiceIds);
+  const autoIncluded = new Set<string>();
+
+  const addService = (serviceId: string, parent?: string): void => {
+    const service = getServiceById(serviceId);
+    if (!service) {
+      errors.push(`Unknown service: ${serviceId}`);
+      return;
+    }
+    if (!service.includedInPlans.includes(plan)) {
+      errors.push(`Service ${serviceId} is not available on plan ${plan}`);
+      return;
+    }
+    if (included.has(serviceId)) return;
+    included.add(serviceId);
+    if (parent && !explicit.has(serviceId)) autoIncluded.add(serviceId);
+    for (const dependency of service.dependencies) addService(dependency, serviceId);
+  };
+
+  for (const serviceId of selectedServiceIds) addService(serviceId);
+  const services = serviceCatalog.filter((service) => included.has(service.id));
+  return {
+    valid: errors.length === 0,
+    plan,
+    services,
+    automaticallyIncludedDependencies: [...autoIncluded],
+    errors: [...new Set(errors)],
+  };
+}
