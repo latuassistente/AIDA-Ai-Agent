@@ -213,3 +213,19 @@ export const defaultAgents: AgentDefinition[] = [
     riskLevel: "YELLOW",
   },
 ];
+
+
+export interface AgentRegistrationTarget {
+  register(agent: AgentDefinition): void;
+}
+
+/**
+ * Registers the default AIDA roster into the runtime registry.
+ * Existing IDs are intentionally not silently overwritten: duplicate IDs signal
+ * a composition/configuration error that should be fixed explicitly.
+ */
+export function registerDefaultAgents(registry: AgentRegistrationTarget): void {
+  for (const agent of defaultAgents) {
+    registry.register(agent);
+  }
+}
