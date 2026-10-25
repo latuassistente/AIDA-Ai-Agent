@@ -216,16 +216,15 @@ export const defaultAgents: AgentDefinition[] = [
 
 
 export interface AgentRegistrationTarget {
-  register(agent: AgentDefinition): void;
+  registerOrReplace(agent: AgentDefinition): void;
 }
 
 /**
- * Registers the default AIDA roster into the runtime registry.
- * Existing IDs are intentionally not silently overwritten: duplicate IDs signal
- * a composition/configuration error that should be fixed explicitly.
+ * Reconciles the default AIDA roster with a runtime registry:
+ * same stable ID = update the existing definition; new ID = add a specialist.
  */
 export function registerDefaultAgents(registry: AgentRegistrationTarget): void {
   for (const agent of defaultAgents) {
-    registry.register(agent);
+    registry.registerOrReplace(agent);
   }
 }
