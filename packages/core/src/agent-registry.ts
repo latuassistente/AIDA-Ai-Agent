@@ -11,6 +11,11 @@ export class InMemoryAgentRegistry implements AgentRegistry {
     this.agents.set(agent.id, agent);
   }
 
+  /** Replaces an agent with the same stable ID, or adds it if it is new. */
+  registerOrReplace(agent: AgentDefinition): void {
+    this.agents.set(agent.id, agent);
+  }
+
   get(agentId: string): AgentDefinition | undefined {
     return this.agents.get(agentId);
   }
