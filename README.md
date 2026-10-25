@@ -1,6 +1,6 @@
-# AIDA AI Agent — AI Agent Platform
+# AIDA-Ai-Agent — Piattaforma agentica AI
 
-AIDA è una piattaforma agentica orientata agli obiettivi: trasforma un obiettivo imprenditoriale in un processo completo di analisi, pianificazione, creazione, comunicazione, vendita, delivery, supporto e ottimizzazione.
+**AIDA-Ai-Agent** è il nome ufficiale del sistema proprietario agentico di Valentina Loprete. La piattaforma trasforma un obiettivo imprenditoriale in un processo verificabile di analisi, pianificazione, creazione, comunicazione, vendita, delivery, supporto e ottimizzazione.
 
 ## Principi architetturali
 
@@ -15,28 +15,30 @@ AIDA è una piattaforma agentica orientata agli obiettivi: trasforma un obiettiv
 
 ## Stato
 
-Repository iniziale: architettura e contratti fondamentali. Le integrazioni operative verranno implementate per fasi, con test e approval gates.
+Repository di sviluppo: contiene runtime iniziale, contratti, registro specialisti, catalogo servizi, documentazione e una prima dashboard. Le integrazioni operative vengono abilitate solo dopo implementazione e test verificabili.
 
 ## Struttura
 
-- `docs/` — architettura, sicurezza, agenti, knowledge e roadmap
-- `packages/core/` — dominio e contratti
-- `packages/agents/` — agenti
+- `docs/` — architettura, sicurezza, agenti, knowledge, catalogo e roadmap
+- `packages/core/` — dominio, orchestrazione, pianificazione e registry
+- `packages/agents/` — roster specialistico e catalogo servizi
 - `packages/knowledge/` — knowledge core
-- `packages/channels/` — canali
+- `packages/channels/` — contratti dei canali
 - `packages/guardrails/` — sicurezza, approvazioni e audit
-- `packages/crm/` — clienti e progetti
-- `packages/proposals/` — offerte e regole commerciali
-- `packages/scheduling/` — appuntamenti
-- `packages/web-factory/` — produzione web/3D/software
-- `apps/web/` — control center e portale cliente
-- `apps/api/` — API e runtime
+- `packages/crm/` — contesto clienti/progetti e Project Brain
+- `packages/database/` — adapter di persistenza
+- `packages/proposals/` — contratti per offerte
+- `packages/scheduling/` — contratti per appuntamenti
+- `packages/web-factory/` — contratti per produzione web/3D/software
+- `apps/web/` — control center iniziale
+- `prisma/` — schema database
+- `tests/` — test automatici
 
 ## Regola fondamentale
 
-AIDA non deve inventare informazioni operative critiche. Se una risposta non può essere verificata dalla Knowledge Base, dalle regole commerciali o da una fonte autorizzata, deve dichiarare l'incertezza e attivare il livello di controllo previsto.
+AIDA-Ai-Agent non deve inventare informazioni operative critiche. Se una risposta non può essere verificata dalla Knowledge Base, dalle regole commerciali o da una fonte autorizzata, deve dichiarare l'incertezza e attivare il livello di controllo previsto.
 
-## Implementato nella fondazione runtime
+## Fondazione runtime presente
 
 - Goal lifecycle service con transizioni di stato e isolamento per tenant
 - Orchestrator, planner, registry agenti e registry strumenti
@@ -46,20 +48,16 @@ AIDA non deve inventare informazioni operative critiche. Se una risposta non pu�
 - Event bus in memoria
 - Knowledge provider iniziale con filtro tenant e documenti attivi
 - Schema PostgreSQL/Prisma per tenant, clienti, progetti, goal, step, knowledge, approvazioni, audit e messaggi unificati
-- Test iniziali per goal lifecycle, isolamento tenant e gate degli strumenti
+- Test iniziali per registry agenti, catalogo servizi, goal lifecycle e gate degli strumenti
 - GitHub Actions per validazione schema, generazione Prisma, typecheck e test
 
-## Catalogo agenti e servizi
+## Registro agenti e catalogo servizi
 
-Il catalogo predefinito contiene 29 definizioni di agenti specialistici, registrabili nel runtime con `createDefaultAgentRegistry()`. Le definizioni con ID esistente vengono aggiornate; gli agenti mancanti vengono aggiunti senza duplicati. La registrazione definisce identità e capacità dichiarate, non sostituisce l'implementazione degli strumenti e delle integrazioni esterne.
+Il roster iniziale contiene 29 definizioni specialistiche con ID stabili. `registerDefaultAgents()` aggiorna la definizione di un agente quando l'ID esiste già e aggiunge gli agenti mancanti; il registry evita quindi duplicati per ID. Orchestrator e Planner restano componenti centrali, non agenti specialistici duplicati.
 
-Il catalogo e il configuratore SaaS sono descritti in `docs/SERVICE-CATALOG-AND-CONFIGURATOR.md`. Lo stato delle integrazioni deve essere verificato separatamente: le capacità pianificate non vanno presentate come operative.
+Le definizioni descrivono identità e capacità dichiarate: non dimostrano da sole che ogni funzione o integrazione esterna sia operativa. Il catalogo usa stati espliciti e le capacità non implementate e testate restano pianificate. Vedi `docs/AGENT-SYSTEM.md` e `docs/SERVICE-CATALOG-AND-CONFIGURATOR.md`.
 
-## Interfaccia iniziale
+## Interfaccia e limiti attuali
 
-È presente una prima dashboard Next.js in `apps/web`: panoramica dei moduli, stato dello sviluppo, prossima fase e avvisi sulle integrazioni non ancora attive. È una control center iniziale, non ancora una console operativa collegata a tutte le funzioni.
-
-## Stato e limiti attuali
-
-Questa è una base di sviluppo, non ancora un prodotto pronto per clienti. Gli adapter in memoria servono per test e sviluppo; prima della produzione vanno configurati database e segreti, eseguite migrazioni, verificate le pipeline CI e implementate le integrazioni ufficiali dei canali. Non sono ancora collegate caselle email, WhatsApp, Messenger, Instagram, TikTok, telefonia, calendari o provider LLM.
+È presente una prima dashboard Next.js, non ancora una console operativa completa. Questa repository è una base di sviluppo, non un prodotto pronto per clienti. Prima della produzione vanno configurati database e segreti, eseguite migrazioni, verificate le pipeline CI e implementate le integrazioni ufficiali dei canali. Email, WhatsApp, Messenger, Instagram, TikTok, telefonia, calendari e provider LLM non vanno considerati attivi finché non siano collegati e testati.
 
