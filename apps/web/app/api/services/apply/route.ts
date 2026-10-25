@@ -48,31 +48,34 @@ export async function POST(request: Request) {
   }
 
   const persistedSelection = resolved.services.map((service) => service.id);
-  const saved = await prisma.tenantServiceConfiguration.upsert({
-    where: { tenantId: session.tenantId },
-    create: {
-      tenantId: session.tenantId,
-      plan: resolved.plan,
-      selectedServiceIds: persistedSelection,
-      updatedBy: session.sub,
-    },
-    update: {
-      plan: resolved.plan,
-      selectedServiceIds: persistedSelection,
-      updatedBy: session.sub,
-    },
-    select: { plan: true, selectedServiceIds: true, updatedAt: true, updatedBy: true },
-  });
+  const saved = await prisma.$transaction(async (tx) => {
+    const configuration = await tx.tenantServiceConfiguration.upsert({
+      where: { tenantId: session.tenantId },
+      create: {
+        tenantId: session.tenantId,
+        plan: resolved.plan,
+        selectedServiceIds: persistedSelection,
+        updatedBy: session.sub,
+      },
+      update: {
+        plan: resolved.plan,
+        selectedServiceIds: persistedSelection,
+        updatedBy: session.sub,
+      },
+      select: { plan: true, selectedServiceIds: true, updatedAt: true, updatedBy: true },
+    });
 
-  await prisma.auditLog.create({
-    data: {
-      tenantId: session.tenantId,
-      actor: session.sub,
-      action: "SERVICE_CONFIGURATION_UPDATED",
-      decision: "ALLOW",
-      target: "tenant-service-configuration",
-      details: { plan: saved.plan, selectedCount: persistedSelection.length },
-    },
+    await tx.auditLog.create({
+      data: {
+        tenantId: session.tenantId,
+        actor: session.sub,
+        action: "SERVICE_CONFIGURATION_UPDATED",
+        decision: "ALLOW",
+        target: "tenant-service-configuration",
+        details: { plan: configuration.plan, selectedCount: persistedSelection.length },
+      },
+    });
+    return configuration;
   });
 
   return NextResponse.json({ valid: true, configuration: saved, persisted: true, integrationsActivated: false }, { status: 200 });
