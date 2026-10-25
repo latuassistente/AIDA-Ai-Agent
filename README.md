@@ -53,9 +53,9 @@ AIDA-Ai-Agent non deve inventare informazioni operative critiche. Se una rispost
 
 ## Registro agenti e catalogo servizi
 
-Il roster iniziale contiene 33 definizioni specialistiche con ID stabili. `registerDefaultAgents()` aggiorna la definizione di un agente quando l'ID esiste già e aggiunge gli agenti mancanti; il registry evita quindi duplicati per ID. Le responsabilità degli agenti esistenti sono state estese per includere social media, segreteria e supporto esecutivo, automazioni, marketing funnel/email, telefonia e callback, CRM e lead scoring, analytics, recruiting e knowledge avanzata. Sono stati aggiunti Document and Records e Legal Support, non presenti come ruoli dedicati. Orchestrator e Planner restano componenti centrali, non agenti specialistici duplicati.
+Il runtime contiene attualmente 33 definizioni specialistiche registrate con ID stabili; il catalogo maestro documentale elenca 210 profili complessivi, distinguendo quelli già presenti da quelli ancora da registrare e collegare. Consulta `docs/MASTER-AGENT-CATALOG.md` per il catalogo completo. `registerDefaultAgents()` aggiorna la definizione di un agente quando l'ID esiste già e aggiunge gli agenti mancanti; il registry evita quindi duplicati per ID. Le responsabilità degli agenti esistenti sono state estese per includere social media, segreteria e supporto esecutivo, automazioni, marketing funnel/email, telefonia e callback, CRM e lead scoring, analytics, recruiting e knowledge avanzata. Sono stati aggiunti Document and Records e Legal Support, non presenti come ruoli dedicati. Orchestrator e Planner restano componenti centrali, non agenti specialistici duplicati.
 
-Le definizioni descrivono identità e capacità dichiarate: non dimostrano da sole che ogni funzione o integrazione esterna sia operativa. Il catalogo usa stati espliciti e le capacità non implementate e testate restano pianificate. Vedi `docs/AGENT-SYSTEM.md` e `docs/SERVICE-CATALOG-AND-CONFIGURATOR.md`.
+Le definizioni descrivono identità e capacità dichiarate: non dimostrano da sole che ogni funzione o integrazione esterna sia operativa. Il catalogo usa stati espliciti e le capacità non implementate e testate restano pianificate. Vedi `docs/MASTER-AGENT-CATALOG.md`, `docs/AGENT-SYSTEM.md` e `docs/SERVICE-CATALOG-AND-CONFIGURATOR.md`.
 
 ## Interfaccia e limiti attuali
 
