@@ -24,6 +24,13 @@ export const defaultAgents: AgentDefinition[] = [
     riskLevel: "GREEN",
   },
   {
+    id: "find",
+    name: "FIND Agent",
+    description: "Discovers businesses, people, records and relevant information from authorized sources; returns sourced candidates for downstream validation.",
+    capabilities: ["find.discover", "find.search", "find.source-provenance", "find.candidate-list"],
+    riskLevel: "GREEN",
+  },
+  {
     id: "lead-prospecting",
     name: "Lead and Prospecting Agent",
     description: "Finds, enriches, verifies and qualifies business prospects while applying source, consent, suppression and deduplication rules.",
@@ -119,6 +126,13 @@ export const defaultAgents: AgentDefinition[] = [
     name: "Appointment and Scheduling Agent",
     description: "Checks connected calendar availability, proposes appointment slots and manages bookings subject to configured permissions.",
     capabilities: ["calendar.availability", "calendar.propose", "calendar.book-approved", "calendar.reschedule"],
+    riskLevel: "YELLOW",
+  },
+  {
+    id: "booking",
+    name: "BOOKING Agent",
+    description: "Coordinates reservation and booking workflows with configured providers, confirms availability before committing and escalates when provider confirmation is unavailable.",
+    capabilities: ["booking.search-availability", "booking.reserve-approved", "booking.modify-approved", "booking.cancel-approved", "booking.confirmation-check"],
     riskLevel: "YELLOW",
   },
   {
