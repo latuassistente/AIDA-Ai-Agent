@@ -19,6 +19,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const origin = request.headers.get("origin");
+  if (origin && origin !== new URL(request.url).origin) {
+    return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
+  }
   const session = await getVerifiedAidaSession();
   if (!session) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
