@@ -56,6 +56,8 @@ export default function ServiceConfigurator() {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -92,6 +94,7 @@ export default function ServiceConfigurator() {
   function toggleService(id: string) {
     setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
     setPreview(null);
+    setSavedMessage("");
     setError("");
   }
 
@@ -117,6 +120,30 @@ export default function ServiceConfigurator() {
       setError(reason instanceof Error ? reason.message : "Errore durante la configurazione.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function saveConfiguration() {
+    if (!preview?.valid) return;
+    setSaving(true);
+    setError("");
+    setSavedMessage("");
+    try {
+      const response = await fetch("/api/services/apply", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ selectedServiceIds: selected, plan }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("Accesso richiesto: configura prima il login AIDA con sessione firmata lato server.");
+        throw new Error(data.error ?? "Impossibile salvare la configurazione.");
+      }
+      setSavedMessage("Configurazione salvata per il tenant autenticato. Le integrazioni esterne non sono state attivate.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Errore durante il salvataggio.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -184,7 +211,9 @@ export default function ServiceConfigurator() {
         </div>
         {preview.automaticallyIncludedDependencies.length > 0 && <div className="preview-list"><strong>Dipendenze incluse automaticamente</strong><p>{preview.automaticallyIncludedDependencies.map((id) => services.find((service) => service.id === id)?.name ?? id).join(" · ")}</p></div>}
         {preview.services.length > 0 && <div className="resolved-services"><strong>Moduli inclusi</strong>{preview.services.map((service) => <div key={service.id}><span>{service.name}</span><span className={"service-status status-" + service.status}>{statusLabels[service.status]}</span></div>)}</div>}
-        <p className="preview-disclaimer">Anteprima soltanto: configurazione non salvata e integrazioni esterne non attivate.</p>
+        <p className="preview-disclaimer">{preview.persisted ? "Configurazione salvata." : "Anteprima soltanto: per salvare serve una sessione autenticata. Le integrazioni esterne non vengono attivate."}</p>
+        {preview.valid && <button type="button" className="primary-action" onClick={saveConfiguration} disabled={saving}>{saving ? "Salvataggio…" : "Salva configurazione tenant"}</button>}
+        {savedMessage && <div className="configurator-message" role="status">{savedMessage}</div>}
       </section>}
     </section>
   );
