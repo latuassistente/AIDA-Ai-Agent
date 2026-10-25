@@ -1,7 +1,7 @@
 import type { AgentDefinition } from "../../core/src/contracts";
 
 /**
- * Default specialist roster for AIDA AI Agent.
+ * Default specialist roster for AIDA-Ai-Agent.
  *
  * These entries register agent identities and declared capabilities. They are
  * not, by themselves, proof that each provider/tool integration is implemented.
