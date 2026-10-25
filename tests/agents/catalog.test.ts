@@ -10,6 +10,10 @@ describe("AIDA default agent catalog", () => {
     expect(ids).toContain("research");
     expect(ids).toContain("execution");
     expect(ids).toContain("quality-assurance");
+    expect(ids).toContain("find");
+    expect(ids).toContain("booking");
+    expect(ids).toContain("web");
+    expect(ids.length).toBe(31);
     expect(ids.length).toBeGreaterThanOrEqual(25);
   });
 
