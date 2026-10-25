@@ -1,3 +1,5 @@
+import ServiceConfigurator from "./components/service-configurator";
+
 const modules = [
   {
     code: "01",
@@ -90,6 +92,8 @@ export default function HomePage() {
             </article>
           ))}
         </div>
+
+        <ServiceConfigurator />
 
         <section className="bottom-grid" id="status">
           <article className="panel-card">
