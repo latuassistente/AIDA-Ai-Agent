@@ -102,19 +102,47 @@ export interface ServiceConfigurationResult {
   errors: string[];
 }
 
+export interface ServiceConfigurationOptions {
+  /** Optional tenant-allowed service IDs. Omitted means no additional tenant restriction. */
+  allowedServiceIds?: string[];
+  /** Optional tenant-denied service IDs. Deny takes precedence over allow. */
+  deniedServiceIds?: string[];
+  /** Services explicitly paused by an administrator or tenant policy. */
+  pausedServiceIds?: string[];
+  /** Service IDs for which the required provider/integration is configured. */
+  configuredIntegrationServiceIds?: string[];
+  /** Services whose configured provider was verified by a successful health check. */
+  verifiedIntegrationServiceIds?: string[];
+}
+
+export interface ServiceConfigurationSummary {
+  selectedServiceIds: string[];
+  automaticallyIncludedDependencies: string[];
+  excludedServiceIds: string[];
+  plannedServiceIds: string[];
+  needsConfigurationServiceIds: string[];
+  activeReadyServiceIds: string[];
+}
+
 /**
- * Resolves a selected service set for a subscription plan. Dependencies are
- * included automatically only when they are available on that plan.
- * This is configuration validation, not activation of external integrations.
+ * Resolves a selected service set against plan access, dependency closure,
+ * tenant allow/deny policy, paused state, and integration readiness.
+ * This function prepares a configuration only; it never activates providers.
  */
 export function configureServices(
   selectedServiceIds: string[],
   plan: string,
+  options: ServiceConfigurationOptions = {},
 ): ServiceConfigurationResult {
   const errors: string[] = [];
   const included = new Set<string>();
   const explicit = new Set(selectedServiceIds);
   const autoIncluded = new Set<string>();
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const allowed = options.allowedServiceIds ? new Set(options.allowedServiceIds) : undefined;
+  const denied = new Set(options.deniedServiceIds ?? []);
+  const paused = new Set(options.pausedServiceIds ?? []);
 
   const addService = (serviceId: string, parent?: string): void => {
     const service = getServiceById(serviceId);
@@ -122,14 +150,29 @@ export function configureServices(
       errors.push(`Unknown service: ${serviceId}`);
       return;
     }
+    if (denied.has(serviceId) || (allowed && !allowed.has(serviceId))) {
+      errors.push(`Service ${serviceId} is not authorized for this tenant`);
+      return;
+    }
+    if (paused.has(serviceId) || service.status === "paused") {
+      errors.push(`Service ${serviceId} is paused`);
+      return;
+    }
     if (!service.includedInPlans.includes(plan)) {
       errors.push(`Service ${serviceId} is not available on plan ${plan}`);
       return;
     }
-    if (included.has(serviceId)) return;
+    if (visiting.has(serviceId)) {
+      errors.push(`Circular service dependency detected at ${serviceId}`);
+      return;
+    }
+    if (visited.has(serviceId)) return;
+    visiting.add(serviceId);
+    for (const dependency of service.dependencies) addService(dependency, serviceId);
+    visiting.delete(serviceId);
+    visited.add(serviceId);
     included.add(serviceId);
     if (parent && !explicit.has(serviceId)) autoIncluded.add(serviceId);
-    for (const dependency of service.dependencies) addService(dependency, serviceId);
   };
 
   for (const serviceId of selectedServiceIds) addService(serviceId);
@@ -140,5 +183,35 @@ export function configureServices(
     services,
     automaticallyIncludedDependencies: [...autoIncluded],
     errors: [...new Set(errors)],
+  };
+}
+
+/** Summarizes readiness without promoting a planned service to active. */
+export function summarizeServiceConfiguration(
+  result: ServiceConfigurationResult,
+  options: Pick<ServiceConfigurationOptions, "configuredIntegrationServiceIds" | "verifiedIntegrationServiceIds" | "pausedServiceIds"> = {},
+): ServiceConfigurationSummary {
+  const configured = new Set(options.configuredIntegrationServiceIds ?? []);
+  const verified = new Set(options.verifiedIntegrationServiceIds ?? []);
+  const paused = new Set(options.pausedServiceIds ?? []);
+  const excludedServiceIds = result.services
+    .filter((service) => paused.has(service.id) || service.status === "paused")
+    .map((service) => service.id);
+  const plannedServiceIds = result.services
+    .filter((service) => service.status === "planned" && !excludedServiceIds.includes(service.id))
+    .map((service) => service.id);
+  const needsConfigurationServiceIds = result.services
+    .filter((service) => service.status === "configurable" && !configured.has(service.id) && !excludedServiceIds.includes(service.id))
+    .map((service) => service.id);
+  const activeReadyServiceIds = result.services
+    .filter((service) => service.status === "active" && configured.has(service.id) && verified.has(service.id) && !excludedServiceIds.includes(service.id))
+    .map((service) => service.id);
+  return {
+    selectedServiceIds: result.services.filter((service) => !result.automaticallyIncludedDependencies.includes(service.id)).map((service) => service.id),
+    automaticallyIncludedDependencies: [...result.automaticallyIncludedDependencies],
+    excludedServiceIds,
+    plannedServiceIds,
+    needsConfigurationServiceIds,
+    activeReadyServiceIds,
   };
 }
