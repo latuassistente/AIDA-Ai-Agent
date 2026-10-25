@@ -67,6 +67,18 @@ Il configuratore deve consentire di selezionare servizi singoli o pacchetti, vis
 
 Ogni tenant ha dati, memoria, segreti, configurazioni, audit e permessi isolati. Il proprietario del sistema può vedere e amministrare il catalogo globale; i clienti vedono solo le funzioni consentite dal piano e dal proprio ruolo. La modalità semplice mostra gli obiettivi e le azioni principali; la modalità avanzata/Pro mostra agenti, workflow, dipendenze, log, configurazioni e controlli.
 
+## Interfaccia del configuratore nel workspace
+
+Il workspace Next.js integra ora il componente `apps/web/app/components/service-configurator.tsx` nella pagina principale:
+
+- carica il catalogo da `GET /api/services/configure`;
+- consente la scelta del piano, la ricerca per nome/ID/agente e il filtro per famiglia;
+- consente di selezionare i servizi e inviare la selezione all'endpoint `POST /api/services/configure`;
+- visualizza la validità della selezione, gli errori, le dipendenze aggiunte automaticamente, lo stato di ogni servizio e un riepilogo di quelli pianificati o ancora da configurare;
+- è adattabile a schermi desktop e mobili.
+
+La verifica resta un'anteprima: non salva le scelte, non attiva provider e non esegue azioni esterne. Le etichette di stato descrivono lo stato presente nel catalogo e non certificano da sole l'operatività reale.
+
 ## AIDA Web Studio — configuratore indipendente
 
 Il configuratore Web Studio deve offrire:
