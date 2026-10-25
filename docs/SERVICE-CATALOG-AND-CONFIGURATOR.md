@@ -1,18 +1,18 @@
-# AIDA AI Agent — Catalogo universale dei servizi e configuratore SaaS
+# AIDA-Ai-Agent — Catalogo universale dei servizi e configuratore SaaS
 
 ## Obiettivo di prodotto
 
-AIDA AI Agent è il sistema proprietario agentico di Valentina Loprete: un control plane che interpreta obiettivi, coordina agenti specializzati, utilizza strumenti autorizzati, verifica i risultati e mantiene memoria e audit per cliente/progetto.
+AIDA-Ai-Agent è il sistema proprietario agentico di Valentina Loprete: un control plane che interpreta obiettivi, coordina agenti specializzati, utilizza strumenti autorizzati, verifica i risultati e mantiene memoria e audit per cliente/progetto.
 
 Il prodotto SaaS derivato deve essere modulare, personalizzabile, vendibile e white-label. Il sistema proprietario mantiene il catalogo completo; ogni tenant SaaS può attivare solo i moduli inclusi nel proprio piano e autorizzati dall'amministratore. AIDA CRM resta un prodotto distinto e può essere collegato tramite API/adapter, non assorbito implicitamente in questo repository.
 
-## Stato verificato
+## Stato verificato del repository
 
-Il repository contiene una fondazione tecnica e documentazione architetturale. Il registro agenti iniziale aveva quattro voci generiche. L'elenco specialisti descritto nei documenti non implica che tutte le capacità o integrazioni esterne siano già operative. La registrazione di un agente dichiara identità e capacità: ogni capacità necessita ancora di implementazione, strumenti, test e integrazioni reali.
+Il repository contiene una fondazione tecnica, un registro predefinito di 29 agenti specialistici, un catalogo tipizzato di servizi, controlli di configurazione per piano/dipendenze e test automatici iniziali. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
 
 ## Aree del catalogo
 
-Il catalogo deve crescere fino a circa 180 servizi, organizzati almeno in queste 18 famiglie. Il numero è un obiettivo di catalogo, non una dichiarazione che i 180 servizi siano già implementati.
+Il catalogo è progettato per crescere fino a circa 180 servizi, organizzati almeno in queste 18 famiglie. Il numero è un obiettivo di catalogo, non una dichiarazione che tutti i servizi siano già implementati.
 
 1. Intelligenza artificiale, orchestrazione e pianificazione
 2. Ricerca, monitoraggio e raccolta dati autorizzata
@@ -46,7 +46,7 @@ Ogni voce di catalogo deve dichiarare almeno:
 - strumenti e integrazioni richiesti, stato reale di ciascuna integrazione
 - permessi, livello di rischio GREEN/YELLOW/RED e approvazioni
 - prezzo, unità di consumo, limiti del piano e modalità di fatturazione
-- versione, stato del servizio (planned, beta, active, paused, deprecated)
+- versione, stato del servizio (planned, configurable, active, paused)
 - disponibilità per piano/tenant e configurazione white-label
 - test automatici, controlli qualità, logging, metriche ed evidenze
 - gestione errori, fallback e condizioni di passaggio a un operatore umano
@@ -56,9 +56,11 @@ Prezzi, quote e limiti devono provenire da configurazioni amministrative version
 ## Configuratore SaaS
 
 Il configuratore deve consentire di selezionare servizi singoli o pacchetti, visualizzare prerequisiti e dipendenze, stimare costi/consumi, abilitare/disabilitare moduli e configurare permessi. Deve distinguere chiaramente:
+
 - disponibile e testato;
 - disponibile ma da configurare;
 - pianificato/non ancora implementato;
+- in pausa;
 - non disponibile per il piano o per mancanza di autorizzazioni.
 
 Ogni tenant ha dati, memoria, segreti, configurazioni, audit e permessi isolati. Il proprietario del sistema può vedere e amministrare il catalogo globale; i clienti vedono solo le funzioni consentite dal piano e dal proprio ruolo. La modalità semplice mostra gli obiettivi e le azioni principali; la modalità avanzata/Pro mostra agenti, workflow, dipendenze, log, configurazioni e controlli.
@@ -101,11 +103,11 @@ Contatti e moduli, WhatsApp, prenotazioni, blog, e-commerce e pagamenti, chatbot
 
 Il risultato deve essere una configurazione leggibile con riepilogo funzionale, moduli selezionati, dipendenze, stima economica, limiti e prossimi passi. Generazione, test, pubblicazione, acquisti e invii esterni restano soggetti a permessi e approvazioni esplicite.
 
-## Team di agenti di riferimento
+## Team di agenti
 
-Il roster iniziale comprende: Business Knowledge, Research, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Human Handoff ed Execution.
+Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 29 agenti specialistici: Business Knowledge, Research, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Human Handoff ed Execution.
 
-L'Orchestrator e il Planner sono componenti centrali di coordinamento, non specialisti autonomi in concorrenza tra loro. Gli specialisti non ridefiniscono l'obiettivo globale: ricevono un incarico delimitato, producono risultati strutturati e restituiscono evidenze al coordinatore.
+Orchestrator e Planner sono componenti centrali di coordinamento, non specialisti autonomi in concorrenza tra loro. Gli specialisti non ridefiniscono l'obiettivo globale: ricevono un incarico delimitato, producono risultati strutturati e restituiscono evidenze al coordinatore.
 
 ## Regole non negoziabili
 
@@ -119,8 +121,8 @@ L'Orchestrator e il Planner sono componenti centrali di coordinamento, non speci
 
 ## Sequenza di implementazione
 
-1. Ampliare e testare il registro agenti e definire contratti strutturati per ogni specialista.
-2. Implementare il catalogo servizi tipizzato e il configuratore con stato, dipendenze, permessi e piani.
+1. Mantenere e testare il roster agenti, i contratti strutturati e la riconciliazione senza duplicati.
+2. Ampliare e testare il catalogo servizi e il configuratore con stato, dipendenze, permessi e piani.
 3. Collegare workflow/orchestratore, database persistente, memoria e audit end-to-end.
 4. Realizzare la base SaaS: autenticazione, ruoli, tenant isolation, piani e configurazione white-label.
 5. Implementare AIDA Web Studio e il suo configuratore indipendente.
