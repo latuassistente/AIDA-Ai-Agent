@@ -79,6 +79,16 @@ Il workspace Next.js integra ora il componente `apps/web/app/components/service-
 
 La verifica resta un'anteprima: non salva le scelte, non attiva provider e non esegue azioni esterne. Le etichette di stato descrivono lo stato presente nel catalogo e non certificano da sole l'operatività reale.
 
+## Persistenza della configurazione per tenant
+
+Il modello Prisma `TenantServiceConfiguration` collega una configurazione al tenant tramite una relazione uno-a-uno e conserva piano, ID dei servizi risolti, autore e timestamp. L'endpoint `POST /api/services/apply` rivalida piano e dipendenze sul server e salva configurazione e audit log nella stessa transazione. `GET /api/services/apply` restituisce soltanto la configurazione del tenant presente nella sessione verificata.
+
+### Contratto di autenticazione richiesto
+
+L'applicazione non contiene ancora un flusso completo di login/session issuance. Per scelta di sicurezza, gli endpoint di persistenza rispondono `401` finché non è presente una sessione valida e il segreto server `AIDA_SESSION_SECRET` (almeno 32 caratteri). Il cookie HttpOnly `aida_session` deve essere emesso esclusivamente dal livello di autenticazione fidato con questo payload firmato HMAC-SHA256: `base64url(JSON({sub, tenantId, role, exp})).base64url(HMAC-SHA256(payload, AIDA_SESSION_SECRET))`. Sono ammessi i ruoli `owner` e `admin`; tenant e utente derivano solo dal payload verificato, mai dal body della richiesta.
+
+Prima del rilascio occorre integrare il provider di autenticazione effettivo, emettere il cookie con `HttpOnly`, `Secure` in produzione e `SameSite=Lax`, applicare protezione CSRF/controllo Origin, applicare policy amministrative e tenant allow/deny lato server, quindi eseguire la migrazione Prisma sul database di destinazione. Il salvataggio della configurazione non attiva provider né esegue azioni esterne. Il catalogo resta una descrizione delle capacità registrate, non una certificazione d'implementazione.
+
 ## AIDA Web Studio — configuratore indipendente
 
 Il configuratore Web Studio deve offrire:
