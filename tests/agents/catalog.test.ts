@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryAgentRegistry } from "../../packages/core/src/agent-registry";
-import { defaultAgents, registerDefaultAgents } from "../../packages/agents/src";
+import { createDefaultAgentRegistry, defaultAgents, registerDefaultAgents } from "../../packages/agents/src";
 
 describe("AIDA default agent catalog", () => {
-  it("keeps stable identities for existing core agents and adds specialists without duplicate IDs", () => {
+  it("preserves stable IDs for existing core agents and adds specialists without duplicate IDs", () => {
     const ids = defaultAgents.map((agent) => agent.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toContain("business-knowledge");
@@ -13,20 +13,25 @@ describe("AIDA default agent catalog", () => {
     expect(ids.length).toBeGreaterThanOrEqual(25);
   });
 
-  it("registers the complete default roster in the runtime registry", () => {
-    const registry = new InMemoryAgentRegistry();
-    registerDefaultAgents(registry);
+  it("creates a runtime registry containing the complete default roster", () => {
+    const registry = createDefaultAgentRegistry();
     expect(registry.list()).toHaveLength(defaultAgents.length);
     for (const agent of defaultAgents) {
       expect(registry.get(agent.id)).toEqual(agent);
     }
   });
 
-  it("fails explicitly rather than silently replacing an already registered agent", () => {
+  it("replaces an existing agent with the same ID and adds the missing specialists", () => {
     const registry = new InMemoryAgentRegistry();
-    registry.register(defaultAgents[0]!);
-    expect(() => registerDefaultAgents(registry)).toThrow(
-      `Agent already registered: ${defaultAgents[0]!.id}`,
-    );
+    registry.register({
+      id: "research",
+      name: "Old Research Agent",
+      description: "Old definition",
+      capabilities: ["research"],
+      riskLevel: "GREEN",
+    });
+    registerDefaultAgents(registry);
+    expect(registry.get("research")?.name).toBe("Research Agent");
+    expect(registry.list()).toHaveLength(defaultAgents.length);
   });
 });
