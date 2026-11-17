@@ -36,8 +36,7 @@ export function parseRecipientCsv(csv: string): ImportedEmailRow[] {
   if (emailIndex < 0) throw new Error("Colonna obbligatoria mancante: email.");
   const find = (...names: string[]) => headers.findIndex((header) => names.includes(header));
   const get = (values: string[], index: number) => index >= 0 ? values[index]?.trim() ?? "" : "";
-  return lines.slice(1).map((line) => {
-    const values = parseCsvLine(line, delimiter);
+  return records.slice(1).map((values) => {
     const legalReviewValue = get(values, find("legalreview", "stato autorizzazione")).toLowerCase();
     const legalReview: ImportedEmailRow["legalReview"] = legalReviewValue === "approved" || legalReviewValue === "approvato" ? "approved" : legalReviewValue === "rejected" || legalReviewValue === "rifiutato" ? "rejected" : "pending";
     return {
