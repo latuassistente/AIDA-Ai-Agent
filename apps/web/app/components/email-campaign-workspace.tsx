@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
-type CampaignReport = { recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
+type CampaignReport = { recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; unsubscribed: number; complaints: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
 const starterEmailHtml = `<!doctype html>
 <html lang="it">
@@ -174,6 +174,8 @@ export default function EmailCampaignWorkspace() {
           <div><strong>{report.ko}</strong><span>KO</span></div>
           <div><strong>{report.pendingOutcome}</strong><span>esito in attesa</span></div>
           <div><strong>{report.bounced}</strong><span>bounce</span></div>
+          <div><strong>{report.unsubscribed}</strong><span>disiscritti</span></div>
+          <div><strong>{report.complaints}</strong><span>segnalazioni spam</span></div>
         </div>
         <p>{report.openTrackingCaveat}</p>
         <div className="email-outcomes">
