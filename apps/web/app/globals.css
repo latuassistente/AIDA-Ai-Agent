@@ -129,3 +129,15 @@ footer{display:flex;justify-content:space-between;color:#9a9eaa;font:400 9px 'DM
 .preview-disclaimer{font-size:10px;color:#7d654e;background:#fff3e8;border-radius:7px;padding:10px 12px;margin:15px 0 0}
 @media(max-width:900px){.configurator{padding:18px}.service-grid{grid-template-columns:1fr}.configurator-controls{grid-template-columns:1fr 1fr}.selected-count{grid-column:1/-1;justify-content:flex-start}.preview-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.configurator-heading{display:block}.catalog-count{display:inline-block;margin-top:12px}.configurator-controls{grid-template-columns:1fr}.selected-count{grid-column:auto}.configurator-actions{flex-direction:column-reverse}.primary-action,.secondary-action{width:100%}.service-option-top{flex-direction:column}.preview-header{align-items:flex-start;flex-direction:column}.preview-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.email-workspace{margin-top:24px;background:#fff;border:1px solid #e5e7ec;border-radius:14px;padding:22px;box-shadow:0 8px 26px rgba(25,32,45,.035)}
+.email-mode-tabs{display:flex;gap:8px;margin:18px 0 14px;flex-wrap:wrap}
+.email-mode-tabs button{border:1px solid #e0e3e9;border-radius:8px;background:#fff;padding:9px 13px;font:600 10px 'DM Sans',sans-serif;color:#606775;cursor:pointer}
+.email-mode-tabs button.active{background:#202635;color:#fff;border-color:#202635}
+.email-import-panel{display:grid;gap:12px;border:1px solid #e7e9ee;border-radius:10px;padding:16px;background:#fbfcfd}
+.email-import-panel label{display:grid;gap:6px;font-size:10px;font-weight:600;color:#535b68}
+.email-import-panel input{width:100%;border:1px solid #dfe2e8;border-radius:7px;padding:10px;background:#fff;font:11px 'DM Sans',sans-serif;color:#333}
+.email-help{font-size:10px;line-height:1.65;color:#777d89;margin:0}
+.email-import-result{margin-top:14px;border:1px solid #dcebe3;border-radius:10px;padding:14px;background:#f8fcf9;font-size:11px}
+.email-import-result>p{font-size:10px;color:#65746a}
+@media(max-width:520px){.email-workspace{padding:16px}.email-mode-tabs{display:grid;grid-template-columns:1fr}.email-mode-tabs button{width:100%}}
