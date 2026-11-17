@@ -223,6 +223,7 @@ model EmailCampaignRecipient {
   @@unique([campaignId, normalizedEmail])
   @@index([campaignId, verificationStatus])
   @@index([campaignId, legalReview])
+  @@index([campaignId, sourceLeadId])
 }
 
 model EmailCampaignEvent {
