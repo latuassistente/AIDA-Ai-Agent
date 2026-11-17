@@ -172,3 +172,7 @@ footer{display:flex;justify-content:space-between;color:#9a9eaa;font:400 9px 'DM
 .email-authorization-fields{display:grid;gap:6px;min-width:260px;flex:1}
 .email-authorization-fields input{width:100%;border:1px solid #dfe2e8;border-radius:6px;padding:7px 8px;background:#fff;font:10px 'DM Sans',sans-serif}
 @media(max-width:600px){.email-authorization-fields{width:100%;min-width:0}}
+
+.email-send-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.email-send-actions .primary-action,.email-send-actions .secondary-action{width:auto}
+@media(max-width:520px){.email-send-actions{align-items:stretch;flex-direction:column}.email-send-actions .primary-action,.email-send-actions .secondary-action{width:100%}}
