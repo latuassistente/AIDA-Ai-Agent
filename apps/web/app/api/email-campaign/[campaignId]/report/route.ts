@@ -3,7 +3,7 @@ import { prisma } from "../../../../../lib/prisma";
 import { getVerifiedAidaSession } from "../../../../../lib/verified-session";
 
 type Context = { params: Promise<{ campaignId: string }> };
-const eventTypes = ["sent", "delivered", "bounced", "opened", "clicked", "replied", "positive", "ko"] as const;
+const eventTypes = ["sent", "delivered", "bounced", "opened", "clicked", "replied", "positive", "ko", "unsubscribed", "complained"] as const;
 
 export async function GET(_request: Request, context: Context) {
   const session = await getVerifiedAidaSession();
@@ -41,6 +41,8 @@ export async function GET(_request: Request, context: Context) {
     sent: count("sent"),
     delivered: count("delivered"),
     bounced: count("bounced"),
+    unsubscribed: count("unsubscribed"),
+    complaints: count("complained"),
     opensDetected: count("opened"),
     clicks: count("clicked"),
     replies,
