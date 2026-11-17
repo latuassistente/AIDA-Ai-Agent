@@ -53,15 +53,15 @@ Il modulo contiene upload CSV/XLSX, storage multi-tenant, editor HTML con antepr
 
 - Editor bozza per oggetto e HTML, con modello responsive iniziale, anteprima isolata tramite iframe sandbox e salvataggio autenticato/tenant-scoped; la modifica è consentita solo alle campagne in stato DRAFT.
 
-- Workspace web con selezione tra upload CSV e modalità B2B Lead Extractor (quest'ultima resta in attesa del connettore runtime).
+- Workspace web con selezione tra upload CSV/XLSX e modalità B2B Lead Extractor tramite adapter HTTP configurabile; il servizio esterno deve esporre il contratto documentato.
 - Endpoint autenticato e tenant-scoped per import CSV/XLSX, con limite di 5 MB e 10.000 righe, deduplicazione email e audit log. Il parser XLSX usa il primo foglio e applica limiti all'espansione dell'archivio ZIP.
 - L'importazione non accetta come autorizzazione valida il valore indicato nel file: tutti i destinatari entrano in stato pending. La revisione esplicita in-app richiede base giuridica e riferimento documentale, ed è registrata nell'audit log.
 - Persistenza PostgreSQL per campagne, destinatari ed eventi, con migration Prisma.
-- Endpoint report tenant-scoped per inviate, consegnate, bounce, aperture rilevate, clic, risposte, positive, KO e in attesa, con elenco destinatari e stato di revisione autorizzazione.
+- Endpoint report tenant-scoped per inviate, consegnate, bounce, aperture rilevate, clic, risposte, non risposte, positive, KO, disiscrizioni e reclami, con elenco destinatari e stato di revisione autorizzazione.
 - Endpoint webhook con firma HMAC-SHA256 e deduplicazione eventi; endpoint autenticato per classificare manualmente le risposte positive/KO e modificarne l'esito.
 - Adapter HTTP configurabili per verifica e invio, endpoint self-service di disiscrizione con token HMAC e header List-Unsubscribe; renderer HTML responsive con escaping e validazione URL.
 
-L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Gli adapter di verifica e invio sono implementati ma richiedono URL, credenziali e un provider conforme al contratto AIDA. Restano da configurare il webhook presso un provider reale, l'inbox/reply sync e l'adapter runtime B2B. L'importazione crea una campagna in bozza e non invia messaggi.
+L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Gli adapter di verifica e invio sono implementati ma richiedono URL, credenziali e un provider conforme al contratto AIDA. Restano da configurare i provider reali (verifica, invio e webhook), l'inbox/reply sync e il servizio esterno B2B compatibile con l'adapter. L'importazione crea una campagna in bozza e non invia messaggi.
 
 
 ## Ingestione eventi e classificazione delle risposte
