@@ -208,6 +208,7 @@ model EmailCampaignRecipient {
   normalizedEmail          String
   companyName              String?
   contactName              String?
+  sourceLeadId             String?
   legalReview              String   @default("pending")
   legalBasis               String?
   authorizationEvidenceId  String?
