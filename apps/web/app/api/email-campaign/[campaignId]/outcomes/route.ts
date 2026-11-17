@@ -25,6 +25,7 @@ export async function PATCH(request: Request, context: Context) {
     return NextResponse.json({ error: "Destinatario o esito non valido." }, { status: 400 });
   }
 
+  const classification = outcome as "positive" | "ko" | "pending";
   const { campaignId } = await context.params;
   const recipient = await prisma.emailCampaignRecipient.findFirst({
     where: { id: recipientId, campaignId, campaign: { tenantId: session.tenantId } },
@@ -42,12 +43,12 @@ export async function PATCH(request: Request, context: Context) {
     await tx.emailCampaignEvent.deleteMany({
       where: { campaignId, recipientId, eventType: { in: ["positive", "ko"] }, providerEventId: null },
     });
-    if (outcome !== "pending") {
+    if (classification !== "pending") {
       await tx.emailCampaignEvent.create({
         data: {
           campaignId,
           recipientId,
-          eventType: outcome,
+          eventType: classification,
           metadata: { classifiedBy: session.sub, classification: "human-reviewed" },
         },
       });
@@ -59,10 +60,10 @@ export async function PATCH(request: Request, context: Context) {
         action: "EMAIL_CAMPAIGN_REPLY_CLASSIFIED",
         decision: "ALLOW",
         target: recipientId,
-        details: { campaignId, email: recipient.email, outcome },
+        details: { campaignId, email: recipient.email, outcome: classification },
       },
     });
   });
 
-  return NextResponse.json({ campaignId, recipientId, outcome, saved: true });
+  return NextResponse.json({ campaignId, recipientId, outcome: classification, saved: true });
 }
