@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
 type SendResult = { attempted: number; sent: number; failed: number; sentTotal: number; eligible: number; remaining: number; complete: boolean; status: string };
-type CampaignReport = { campaign: { id: string; name: string; status: string; createdAt: string }; recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; sourceLeadId: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; unsubscribed: number; complaints: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
+type CampaignReport = { campaign: { id: string; name: string; status: string; createdAt: string }; recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; sourceLeadId: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; unsubscribed: number; complaints: number; opensDetected: number; clicks: number; replies: number; noReplies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
 const starterEmailHtml = `<!doctype html>
 <html lang="it">
@@ -224,6 +224,7 @@ export default function EmailCampaignWorkspace() {
           <div><strong>{report.delivered}</strong><span>consegnate</span></div>
           <div><strong>{report.opensDetected}</strong><span>aperture rilevate</span></div>
           <div><strong>{report.replies}</strong><span>risposte</span></div>
+          <div><strong>{report.noReplies}</strong><span>senza risposta</span></div>
           <div><strong>{report.positive}</strong><span>positive</span></div>
           <div><strong>{report.ko}</strong><span>KO</span></div>
           <div><strong>{report.pendingOutcome}</strong><span>esito in attesa</span></div>
