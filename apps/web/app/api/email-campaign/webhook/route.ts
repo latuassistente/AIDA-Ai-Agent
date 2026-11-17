@@ -52,23 +52,23 @@ export async function POST(request: Request) {
   try {
     await prisma.$transaction(async (tx) => {
       await tx.emailCampaignEvent.create({
-      data: {
-        campaignId,
-        recipientId: recipient.id,
-        eventType,
-        providerEventId: eventId,
-        occurredAt,
-        ...(eventType === "replied" && typeof event.textExcerpt === "string"
-          ? { metadata: { textExcerpt: event.textExcerpt.slice(0, 1000) } }
-          : {}),
-      },
-    });
-    if (eventType === "unsubscribed" || eventType === "complained") {
-      await tx.emailCampaignRecipient.update({
-        where: { id: recipient.id },
-        data: eventType === "unsubscribed" ? { unsubscribed: true } : { suppressed: true },
+        data: {
+          campaignId,
+          recipientId: recipient.id,
+          eventType,
+          providerEventId: eventId,
+          occurredAt,
+          ...(eventType === "replied" && typeof event.textExcerpt === "string"
+            ? { metadata: { textExcerpt: event.textExcerpt.slice(0, 1000) } }
+            : {}),
+        },
       });
-    }
+      if (eventType === "unsubscribed" || eventType === "complained") {
+        await tx.emailCampaignRecipient.update({
+          where: { id: recipient.id },
+          data: eventType === "unsubscribed" ? { unsubscribed: true } : { suppressed: true },
+        });
+      }
     });
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
