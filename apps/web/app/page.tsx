@@ -1,4 +1,5 @@
 import ServiceConfigurator from "./components/service-configurator";
+import EmailCampaignWorkspace from "./components/email-campaign-workspace";
 
 const modules = [
   {
@@ -94,6 +95,8 @@ export default function HomePage() {
         </div>
 
         <ServiceConfigurator />
+
+        <EmailCampaignWorkspace />
 
         <section className="bottom-grid" id="status">
           <article className="panel-card">
