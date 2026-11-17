@@ -33,7 +33,9 @@ export default function EmailCampaignWorkspace() {
   const [error, setError] = useState("");
   const [report, setReport] = useState<CampaignReport | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
-  const [classifyingId, setClassifyingId] = useState<string | null>(null);\n  const [authBusyId, setAuthBusyId] = useState<string | null>(null);\n  const [authorizationInputs, setAuthorizationInputs] = useState<Record<string, { legalBasis: string; evidenceId: string }>>({});
+  const [classifyingId, setClassifyingId] = useState<string | null>(null);
+  const [authBusyId, setAuthBusyId] = useState<string | null>(null);
+  const [authorizationInputs, setAuthorizationInputs] = useState<Record<string, { legalBasis: string; evidenceId: string }>>({});
   const [subject, setSubject] = useState("Una proposta per la tua attività");
   const [htmlContent, setHtmlContent] = useState(starterEmailHtml);
   const [contentBusy, setContentBusy] = useState(false);
