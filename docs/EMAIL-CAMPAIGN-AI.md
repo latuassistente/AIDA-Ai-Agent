@@ -4,7 +4,7 @@
 
 La campagna supporta due modalità selezionabili:
 
-1. **Caricamento manuale**: upload di una lista CSV o XLSX nell'interfaccia. L'importazione deve mostrare anteprima, mappatura colonne, righe non valide, duplicati e campi mancanti prima del salvataggio. La lista conserva il file sorgente, il tenant, la data di importazione e la provenienza dei singoli record.
+1. **Caricamento manuale**: upload di una lista CSV o XLSX nell'interfaccia. L'importazione attualmente supporta CSV e XLSX (primo foglio), con colonna email obbligatoria e campi facoltativi per azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppressione e disiscrizione. L'importazione riepiloga righe importate, duplicati e indirizzi non validi. La lista conserva il file sorgente, il tenant, la data di importazione e la provenienza dei singoli record.
 2. **Collegamento B2B Lead Extractor AI**: selezione di una ricerca, segmento o archivio prodotto dall'agente B2B. L'integrazione passa gli ID dei record e non copia contatti che non abbiano superato il controllo di idoneità al marketing. I record importati mantengono il riferimento al lead originale.
 
 Le due modalità confluiscono nello stesso controllo di idoneità, deduplicazione e verifica. La sola presenza di un indirizzo email in un file o su una pagina pubblica non lo rende automaticamente utilizzabile per una campagna.
@@ -58,4 +58,4 @@ Il modulo contiene la logica pura di idoneità destinatari e aggregazione report
 - Endpoint report tenant-scoped per inviate, consegnate, bounce, aperture rilevate, clic, risposte, positive, KO e in attesa.
 - Contratti provider per verifica email, invio e sincronizzazione risposte; renderer HTML responsive con escaping e validazione URL.
 
-L'upload attualmente accetta CSV. XLSX, provider di verifica, provider di invio, webhook eventi, inbox/reply sync e adapter B2B restano da integrare. L'importazione crea una campagna in bozza e non invia messaggi.
+L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Provider di verifica, provider di invio, webhook eventi, inbox/reply sync e adapter B2B restano da integrare. L'importazione crea una campagna in bozza e non invia messaggi.
