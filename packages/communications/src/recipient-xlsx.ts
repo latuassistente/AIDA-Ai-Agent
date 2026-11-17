@@ -2,6 +2,8 @@ import { inflateRawSync } from "node:zlib";
 import type { ImportedEmailRow } from "./recipient-csv";
 
 const MAX_ARCHIVE_ENTRY_BYTES = 20 * 1024 * 1024;
+const MAX_ARCHIVE_TOTAL_BYTES = 25 * 1024 * 1024;
+const MAX_ARCHIVE_ENTRIES = 1_000;
 
 function decodeXml(value: string): string {
   return value
@@ -26,7 +28,9 @@ function zipEntries(buffer: Buffer): Map<string, Buffer> {
   if (eocd < 0) throw new Error("File XLSX non valido: archivio ZIP non trovato.");
   const count = buffer.readUInt16LE(eocd + 10);
   const centralOffset = buffer.readUInt32LE(eocd + 16);
+  if (count > MAX_ARCHIVE_ENTRIES) throw new Error("Il file XLSX contiene troppe voci ZIP.");
   const entries = new Map<string, Buffer>();
+  let expandedTotal = 0;
   let cursor = centralOffset;
   for (let index = 0; index < count; index += 1) {
     if (buffer.readUInt32LE(cursor) !== 0x02014b50) throw new Error("Indice ZIP XLSX non valido.");
@@ -50,6 +54,8 @@ function zipEntries(buffer: Buffer): Map<string, Buffer> {
     else if (method === 8) data = inflateRawSync(compressed, { maxOutputLength: MAX_ARCHIVE_ENTRY_BYTES });
     else continue;
     if (data.length !== uncompressedSize) throw new Error("Dimensione contenuto XLSX non coerente.");
+    expandedTotal += data.length;
+    if (expandedTotal > MAX_ARCHIVE_TOTAL_BYTES) throw new Error("Il contenuto XLSX supera il limite di sicurezza.");
     entries.set(name, data);
   }
   return entries;
