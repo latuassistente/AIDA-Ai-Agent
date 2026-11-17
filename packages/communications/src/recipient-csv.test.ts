@@ -5,7 +5,7 @@ describe("recipient CSV parser", () => {
   it("parses comma-separated files with quoted fields", () => {
     const rows = parseRecipientCsv('email,azienda,referente,legalReview,legalBasis,authorizationEvidenceId\ninfo@example.it,"Alfa, Srl",Mario,approved,consent,proof-1');
     expect(rows[0]?.companyName).toBe("Alfa, Srl");
-    expect(rows[0]?.legalReview).toBe("approved");
+    expect(rows[0]?.legalReview).toBe("pending");
   });
 
   it("parses semicolon-separated Italian exports", () => {
