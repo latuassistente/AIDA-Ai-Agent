@@ -85,7 +85,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     campaignId: campaign.id,
-    imported: campaign._count.recipients,
+    imported: campaign.recipients.length,
     duplicates,
     invalid,
     status: campaign.status,
