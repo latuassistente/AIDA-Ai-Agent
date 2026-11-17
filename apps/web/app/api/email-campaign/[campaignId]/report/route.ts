@@ -41,7 +41,7 @@ export async function GET(_request: Request, context: Context) {
     sent: count("sent"),
     delivered: count("delivered"),
     bounced: count("bounced"),
-    unsubscribed: count("unsubscribed"),
+    unsubscribed: campaign.recipients.filter((recipient) => recipient.unsubscribed).length,
     complaints: count("complained"),
     opensDetected: count("opened"),
     clicks: count("clicked"),
