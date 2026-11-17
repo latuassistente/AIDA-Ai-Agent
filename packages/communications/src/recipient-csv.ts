@@ -48,10 +48,8 @@ export function parseRecipientCsv(csv: string): ImportedEmailRow[] {
   const find = (...names: string[]) => headers.findIndex((header) => names.includes(header));
   const get = (values: string[], index: number) => index >= 0 ? values[index]?.trim() ?? "" : "";
   return records.slice(1).map((values) => {
-    const legalReviewValue = get(values, find("legalreview", "stato autorizzazione")).toLowerCase();
-    const legalReview: ImportedEmailRow["legalReview"] =
-      legalReviewValue === "approved" || legalReviewValue === "approvato" ? "approved" :
-      legalReviewValue === "rejected" || legalReviewValue === "rifiutato" ? "rejected" : "pending";
+    // Imported status is only a source claim; authorization requires an explicit in-app review.
+    const legalReview: ImportedEmailRow["legalReview"] = "pending";
     const companyName = get(values, find("companyname", "azienda", "ragione sociale"));
     const contactName = get(values, find("contactname", "referente", "nome contatto"));
     const legalBasis = get(values, find("legalbasis", "base giuridica"));
