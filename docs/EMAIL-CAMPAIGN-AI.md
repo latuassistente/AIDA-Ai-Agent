@@ -67,7 +67,7 @@ L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione
 
 - Endpoint provider webhook: `POST /api/email-campaign/webhook`.
 - Il payload deve contenere `campaignId`, `eventId`, `type`, `email` e, facoltativamente, `occurredAt` e `textExcerpt`.
-- Tipi accettati: `sent`, `delivered`, `bounced`, `opened`, `clicked`, `replied`.
+- Tipi accettati: `sent`, `delivered`, `bounced`, `opened`, `clicked`, `replied`, `unsubscribed`, `complained`. Gli eventi di disiscrizione aggiornano il flag `unsubscribed`; le segnalazioni spam attivano la soppressione del destinatario.
 - La richiesta deve includere `x-aida-signature: sha256=<hex>`, calcolata come HMAC-SHA256 del body HTTP grezzo con il segreto server `EMAIL_CAMPAIGN_WEBHOOK_SECRET`. Senza segreto configurato l'endpoint risponde 503; firma non valida 401.
 - Gli eventi sono associati al destinatario della campagna e deduplicati tramite ID evento del provider.
 - Le risposte possono essere classificate manualmente da un utente autenticato attraverso `PATCH /api/email-campaign/{campaignId}/outcomes`, con `recipientId` e `outcome` (`positive`, `ko` o `pending`). La classificazione è consentita soltanto dopo un evento `replied`, sostituisce l'esito precedente ed è registrata nell'audit log.
