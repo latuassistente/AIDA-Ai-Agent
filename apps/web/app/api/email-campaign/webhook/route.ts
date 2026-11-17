@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 
-const acceptedTypes = new Set(["sent", "delivered", "bounced", "opened", "clicked", "replied"]);
+const acceptedTypes = new Set(["sent", "delivered", "bounced", "opened", "clicked", "replied", "unsubscribed", "complained"]);
 
 function validSignature(rawBody: string, supplied: string, secret: string): boolean {
   const expected = `sha256=${createHmac("sha256", secret).update(rawBody).digest("hex")}`;
@@ -50,7 +50,8 @@ export async function POST(request: Request) {
   if (!recipient) return NextResponse.json({ error: "Destinatario non trovato nella campagna." }, { status: 404 });
 
   try {
-    await prisma.emailCampaignEvent.create({
+    await prisma.$transaction(async (tx) => {
+      await tx.emailCampaignEvent.create({
       data: {
         campaignId,
         recipientId: recipient.id,
@@ -61,6 +62,13 @@ export async function POST(request: Request) {
           ? { metadata: { textExcerpt: event.textExcerpt.slice(0, 1000) } }
           : {}),
       },
+    });
+    if (eventType === "unsubscribed" || eventType === "complained") {
+      await tx.emailCampaignRecipient.update({
+        where: { id: recipient.id },
+        data: eventType === "unsubscribed" ? { unsubscribed: true } : { suppressed: true },
+      });
+    }
     });
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
