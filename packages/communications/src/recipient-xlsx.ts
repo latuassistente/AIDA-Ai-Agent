@@ -106,10 +106,8 @@ export function parseRecipientXlsx(input: Uint8Array): ImportedEmailRow[] {
   if (emailIndex < 0) throw new Error("Colonna obbligatoria mancante: email.");
   const get = (values: string[], index: number) => index >= 0 ? values[index]?.trim() ?? "" : "";
   return rows.slice(1).map((values) => {
-    const legalValue = get(values, find("legalreview", "stato autorizzazione")).toLowerCase();
-    const legalReview: ImportedEmailRow["legalReview"] =
-      legalValue === "approved" || legalValue === "approvato" ? "approved" :
-      legalValue === "rejected" || legalValue === "rifiutato" ? "rejected" : "pending";
+    // Imported status is only a source claim; authorization requires an explicit in-app review.
+    const legalReview: ImportedEmailRow["legalReview"] = "pending";
     const companyName = get(values, find("companyname", "azienda", "ragione sociale"));
     const contactName = get(values, find("contactname", "referente", "nome contatto"));
     const legalBasis = get(values, find("legalbasis", "base giuridica"));
