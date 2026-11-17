@@ -5,6 +5,25 @@ import { useState } from "react";
 type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
 type CampaignReport = { recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
+const starterEmailHtml = `<!doctype html>
+<html lang="it">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;background:#f2f4f7;font-family:Arial,sans-serif;color:#253044}
+.wrap{padding:32px 12px}.card{max-width:600px;margin:auto;background:#fff;border-radius:14px;overflow:hidden}
+.top{height:8px;background:#e87924}.content{padding:38px 34px;line-height:1.65}
+h1{font-size:27px;line-height:1.2;margin:0 0 18px}.button{display:inline-block;background:#e87924;color:#fff;text-decoration:none;padding:13px 22px;border-radius:7px;font-weight:bold}
+.footer{padding:20px 28px;text-align:center;background:#f8f9fb;color:#697386;font-size:12px}
+@media(max-width:480px){.content{padding:26px 20px}.wrap{padding:12px 8px}}
+</style></head>
+<body><div class="wrap"><div class="card"><div class="top"></div><main class="content">
+<p style="font-size:12px;letter-spacing:1.5px;color:#e87924;font-weight:bold">LA TUA AZIENDA</p>
+<h1>Un messaggio pensato per la tua attività</h1>
+<p>Buongiorno,</p><p>inserisci qui il testo della tua comunicazione. Mantieni il messaggio chiaro, pertinente e coerente con il consenso e la base giuridica verificati per ogni destinatario.</p>
+<p style="margin:28px 0"><a class="button" href="https://example.com">Scopri di più</a></p>
+<p> Cordiali saluti,<br><strong>Il tuo team</strong></p>
+</main><footer class="footer">Ragione sociale · Indirizzo · Informazioni sulla disiscrizione</footer></div></div></body></html>`;
+
 export default function EmailCampaignWorkspace() {
   const [mode, setMode] = useState<"upload" | "lead-extractor">("upload");
   const [file, setFile] = useState<File | null>(null);
@@ -14,6 +33,10 @@ export default function EmailCampaignWorkspace() {
   const [error, setError] = useState("");
   const [report, setReport] = useState<CampaignReport | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
+  const [subject, setSubject] = useState("Una proposta per la tua attività");
+  const [htmlContent, setHtmlContent] = useState(starterEmailHtml);
+  const [contentBusy, setContentBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   async function importFile() {
     if (!file) { setError("Seleziona un file CSV."); return; }
@@ -27,9 +50,27 @@ export default function EmailCampaignWorkspace() {
       if (!response.ok) throw new Error(payload.error ?? "Importazione non riuscita.");
       setResult(payload as ImportResult);
       setReport(null);
+      setSaved(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Errore durante l'importazione.");
     } finally { setBusy(false); }
+  }
+
+  async function saveContent() {
+    if (!result) return;
+    setContentBusy(true); setError(""); setSaved(false);
+    try {
+      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/content`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, htmlContent }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Salvataggio non riuscito.");
+      setSaved(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Errore nel salvataggio.");
+    } finally { setContentBusy(false); }
   }
 
   async function loadReport() {
@@ -73,6 +114,18 @@ export default function EmailCampaignWorkspace() {
         <div><strong>{result.invalid}</strong><span>email non valide</span></div>
       </div>
       <p>Stato: {result.status}. Nessun invio effettuato.</p>
+      <div className="email-composer">
+        <h3>Composizione email HTML</h3>
+        <label>Oggetto<input value={subject} maxLength={240} onChange={(event) => { setSubject(event.target.value); setSaved(false); }} /></label>
+        <label>Codice HTML<textarea value={htmlContent} rows={14} maxLength={200000} spellCheck={false} onChange={(event) => { setHtmlContent(event.target.value); setSaved(false); }} /></label>
+        <div className="email-composer-actions">
+          <button type="button" className="secondary-action" onClick={saveContent} disabled={contentBusy}>{contentBusy ? "Salvataggio…" : "Salva bozza email"}</button>
+          {saved && <span className="email-saved" role="status">Bozza salvata</span>}
+        </div>
+        <h4>Anteprima grafica HTML</h4>
+        <iframe title="Anteprima email HTML" sandbox="" srcDoc={htmlContent} className="email-html-preview" />
+        <p className="email-help">L'anteprima è isolata. Il salvataggio conserva la bozza; non esegue invii.</p>
+      </div>
       <button type="button" className="secondary-action" onClick={loadReport} disabled={reportBusy}>{reportBusy ? "Caricamento report…" : "Apri report campagna"}</button>
       {report && <div className="email-report">
         <strong>Report campagna</strong>
