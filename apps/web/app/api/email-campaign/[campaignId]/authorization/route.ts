@@ -26,7 +26,8 @@ export async function PATCH(request: Request, context: Context) {
   if (typeof recipientId !== "string" || !["approved", "rejected", "pending"].includes(String(legalReview))) {
     return NextResponse.json({ error: "Destinatario o stato autorizzazione non valido." }, { status: 400 });
   }
-  if (legalReview === "approved" &&
+  const reviewStatus = legalReview as "approved" | "rejected" | "pending";
+  if (reviewStatus === "approved" &&
       (typeof legalBasis !== "string" || !legalBasis.trim() || typeof authorizationEvidenceId !== "string" || !authorizationEvidenceId.trim())) {
     return NextResponse.json({ error: "Per approvare servono base giuridica e riferimento alla prova documentale." }, { status: 422 });
   }
@@ -42,7 +43,7 @@ export async function PATCH(request: Request, context: Context) {
     prisma.emailCampaignRecipient.update({
       where: { id: recipient.id },
       data: {
-        legalReview,
+        legalReview: reviewStatus,
         ...(typeof legalBasis === "string" ? { legalBasis: legalBasis.trim() || null } : {}),
         ...(typeof authorizationEvidenceId === "string" ? { authorizationEvidenceId: authorizationEvidenceId.trim() || null } : {}),
       },
@@ -57,7 +58,7 @@ export async function PATCH(request: Request, context: Context) {
         details: {
           campaignId,
           email: recipient.email,
-          legalReview,
+          legalReview: reviewStatus,
           legalBasis: typeof legalBasis === "string" ? legalBasis.trim() : null,
           authorizationEvidenceId: typeof authorizationEvidenceId === "string" ? authorizationEvidenceId.trim() : null,
         },
@@ -65,5 +66,5 @@ export async function PATCH(request: Request, context: Context) {
     }),
   ]);
 
-  return NextResponse.json({ campaignId, recipientId, legalReview, reviewed: true });
+  return NextResponse.json({ campaignId, recipientId, legalReview: reviewStatus, reviewed: true });
 }
