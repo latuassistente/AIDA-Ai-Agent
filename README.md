@@ -19,7 +19,7 @@ Repository di sviluppo: contiene runtime iniziale, contratti, registro specialis
 
 ## Struttura
 
-- `docs/` — architettura, sicurezza, agenti, knowledge, catalogo e roadmap
+- `docs/` — architettura, sicurezza, agenti, knowledge, catalogo e roadmap; specifica dei tre agenti prioritari in `docs/P0-AGENTS-SPEC.md`
 - `packages/core/` — dominio, orchestrazione, pianificazione e registry
 - `packages/agents/` — roster specialistico e catalogo servizi
 - `packages/knowledge/` — knowledge core
