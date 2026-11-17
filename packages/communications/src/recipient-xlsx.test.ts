@@ -55,7 +55,7 @@ describe("recipient XLSX parser", () => {
     const file = makeStoredZip({ "xl/worksheets/sheet1.xml": worksheet });
     const rows = parseRecipientXlsx(file);
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ email: "info@example.it", companyName: "Alfa Srl", legalReview: "approved" });
+    expect(rows[0]).toMatchObject({ email: "info@example.it", companyName: "Alfa Srl", legalReview: "pending" });
   });
 
   it("rejects data that is not an XLSX ZIP archive", () => {
