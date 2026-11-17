@@ -85,3 +85,13 @@ La piattaforma espone adapter HTTP generici configurabili senza legare il codice
 - Il pulsante UI richiede conferma esplicita e invia un batch alla volta. Lo stato campagna diventa `PARTIALLY_SENT` o `SENT` in base ai messaggi accettati dal provider.
 
 Questi sono contratti HTTP AIDA, non integrazioni vendor già collegate. Senza URL, credenziali e provider compatibile, gli endpoint rispondono senza inviare né verificare. Prima del rilascio occorrono test end-to-end con il provider scelto e verifica dei webhook reali.
+
+
+## Adapter B2B Lead Extractor
+
+- Endpoint AIDA: `POST /api/email-campaign/lead-extractor`, autenticato e tenant-scoped.
+- Configurazione server: `B2B_LEAD_EXTRACTOR_API_URL` (HTTPS) e `B2B_LEAD_EXTRACTOR_API_KEY`.
+- La UI invia `campaignName` e `segmentId`. AIDA interroga il connettore con `tenantId`, `segmentId` e `limit: 50`.
+- Risposta richiesta: `{ "leads": [{ "id": "lead-id", "email": "nome@azienda.it", "companyName": "...", "contactName": "...", "legalBasis": "...", "authorizationEvidenceId": "...", "suppressed": false, "unsubscribed": false }] }`.
+- AIDA deduplica gli indirizzi, conserva `sourceLeadId` e crea una campagna con fonte `B2B_LEAD_EXTRACTOR`. Non accetta dal connettore stati di autorizzazione o verifica come prova: tutti i record entrano in `pending` e `unknown`, con revisione umana e verifica provider necessarie prima dell'invio.
+- Il servizio esterno B2B deve applicare isolamento tenant e restituire esclusivamente record appartenenti al tenant richiesto. Il connettore è un contratto configurabile: senza endpoint e credenziali la modalità risponde 503 e non crea record simulati.
