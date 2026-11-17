@@ -28,6 +28,8 @@ export async function GET(_request: Request, context: Context) {
   const count = (type: string) => uniqueRecipients(type);
   const eligible = campaign.recipients.filter((recipient) =>
     recipient.legalReview === "approved" &&
+    recipient.legalBasis !== null &&
+    recipient.authorizationEvidenceId !== null &&
     recipient.verificationStatus === "valid" &&
     !recipient.suppressed &&
     !recipient.unsubscribed,
