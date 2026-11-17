@@ -153,3 +153,16 @@ footer{display:flex;justify-content:space-between;color:#9a9eaa;font:400 9px 'DM
 .email-saved{font-size:10px;color:#237b58;font-weight:600}
 .email-html-preview{width:100%;height:520px;border:1px solid #e0e3e9;border-radius:8px;background:#f2f4f7}
 @media(max-width:520px){.email-html-preview{height:420px}.email-composer{padding:12px}}
+
+.email-outcomes{display:grid;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #dcebe3}
+.email-outcomes>strong{font:700 12px Manrope,sans-serif}
+.email-outcomes>p{font-size:10px;color:#777d89}
+.email-outcome-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px;border:1px solid #e6e9ed;border-radius:8px;background:#fff}
+.email-outcome-row>div:first-child{display:grid;gap:3px;min-width:0}
+.email-outcome-row b{font-size:10px;overflow-wrap:anywhere}
+.email-outcome-row span{font-size:9px;color:#777d89;overflow-wrap:anywhere}
+.email-outcome-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.email-outcome-actions button{border:1px solid #dfe2e8;border-radius:6px;padding:6px 8px;background:#fff;color:#596170;font:600 9px 'DM Sans',sans-serif;cursor:pointer}
+.email-outcome-actions button.selected{background:#202635;color:#fff;border-color:#202635}
+.email-outcome-actions button:disabled{opacity:.5;cursor:wait}
+@media(max-width:600px){.email-outcome-row{align-items:flex-start;flex-direction:column}.email-outcome-actions{justify-content:flex-start}}
