@@ -49,6 +49,7 @@ export async function POST(request: Request, context: Context) {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ email: recipient.email }),
         signal: AbortSignal.timeout(12_000),
+        redirect: "error",
       });
       if (!response.ok) { counts.failed += 1; continue; }
       const result: unknown = await response.json();
