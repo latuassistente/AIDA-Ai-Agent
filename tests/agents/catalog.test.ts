@@ -16,6 +16,18 @@ describe("AIDA default agent catalog", () => {
     expect(ids).toContain("legal-support");
     expect(ids).toContain("web");
     expect(ids.length).toBe(38);
+    expect(defaultAgents.find((agent) => agent.id === "lead-prospecting")?.name).toBe("B2B Lead Extractor AI");
+    expect(defaultAgents.find((agent) => agent.id === "document")?.name).toBe("PC File Manager AI");
+    expect(defaultAgents.find((agent) => agent.id === "omnichannel-communications")?.name).toBe("Email Campaign AI");
+    expect(defaultAgents.find((agent) => agent.id === "lead-prospecting")?.capabilities).toEqual(
+      expect.arrayContaining(["leads.enrich-mobile", "leads.enrich-email", "leads.normalize", "leads.deduplicate"]),
+    );
+    expect(defaultAgents.find((agent) => agent.id === "document")?.capabilities).toEqual(
+      expect.arrayContaining(["files.keyword-search", "files.move-approved", "files.scoped-access-check"]),
+    );
+    expect(defaultAgents.find((agent) => agent.id === "omnichannel-communications")?.capabilities).toEqual(
+      expect.arrayContaining(["communications.email-html-render", "communications.recipient-authorization-check", "communications.send-approved"]),
+    );
     expect(ids.length).toBeGreaterThanOrEqual(25);
   });
 
