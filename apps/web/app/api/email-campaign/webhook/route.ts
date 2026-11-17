@@ -14,7 +14,10 @@ function validSignature(rawBody: string, supplied: string, secret: string): bool
 export async function POST(request: Request) {
   const secret = process.env.EMAIL_CAMPAIGN_WEBHOOK_SECRET;
   if (!secret) return NextResponse.json({ error: "Webhook non configurato." }, { status: 503 });
+  const declaredLength = Number(request.headers.get("content-length") ?? 0);
+  if (declaredLength > 256 * 1024) return NextResponse.json({ error: "Payload webhook oltre 256 KB." }, { status: 413 });
   const rawBody = await request.text();
+  if (Buffer.byteLength(rawBody, "utf8") > 256 * 1024) return NextResponse.json({ error: "Payload webhook oltre 256 KB." }, { status: 413 });
   const signature = request.headers.get("x-aida-signature") ?? "";
   if (!validSignature(rawBody, signature, secret)) {
     return NextResponse.json({ error: "Firma webhook non valida." }, { status: 401 });
