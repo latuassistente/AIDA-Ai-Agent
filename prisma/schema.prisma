@@ -18,6 +18,7 @@ model Tenant {
   approvals ApprovalRequest[]
   auditLogs AuditLog[]
   serviceConfiguration TenantServiceConfiguration?
+  emailCampaigns EmailCampaign[]
 }
 
 model Customer {
@@ -180,4 +181,60 @@ model TenantServiceConfiguration {
   updatedAt          DateTime @updatedAt
   tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   @@index([plan])
+}
+
+
+model EmailCampaign {
+  id             String   @id @default(cuid())
+  tenantId       String
+  name           String
+  subject        String?
+  htmlContent    String?
+  status         String   @default("DRAFT")
+  recipientSource String  @default("UPLOAD")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  recipients     EmailCampaignRecipient[]
+  events         EmailCampaignEvent[]
+  @@index([tenantId, createdAt])
+  @@index([tenantId, status])
+}
+
+model EmailCampaignRecipient {
+  id                       String   @id @default(cuid())
+  campaignId               String
+  email                    String
+  normalizedEmail          String
+  companyName              String?
+  contactName              String?
+  legalReview              String   @default("pending")
+  legalBasis               String?
+  authorizationEvidenceId  String?
+  suppressed               Boolean  @default(false)
+  unsubscribed             Boolean  @default(false)
+  verificationStatus       String   @default("unknown")
+  verificationProvider     String?
+  verifiedAt               DateTime?
+  createdAt                DateTime @default(now())
+  campaign                 EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  events                   EmailCampaignEvent[]
+  @@unique([campaignId, normalizedEmail])
+  @@index([campaignId, verificationStatus])
+  @@index([campaignId, legalReview])
+}
+
+model EmailCampaignEvent {
+  id             String   @id @default(cuid())
+  campaignId     String
+  recipientId    String?
+  eventType      String
+  providerEventId String?
+  occurredAt     DateTime @default(now())
+  metadata       Json?
+  campaign       EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  recipient      EmailCampaignRecipient? @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  @@unique([campaignId, providerEventId])
+  @@index([campaignId, eventType])
+  @@index([recipientId, occurredAt])
 }
