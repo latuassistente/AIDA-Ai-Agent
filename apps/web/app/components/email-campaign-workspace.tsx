@@ -28,6 +28,8 @@ h1{font-size:27px;line-height:1.2;margin:0 0 18px}.button{display:inline-block;b
 export default function EmailCampaignWorkspace() {
   const [mode, setMode] = useState<"upload" | "lead-extractor">("upload");
   const [file, setFile] = useState<File | null>(null);
+  const [leadSegmentId, setLeadSegmentId] = useState("");
+  const [leadImportBusy, setLeadImportBusy] = useState(false);
   const [campaignName, setCampaignName] = useState("Nuova campagna");
   const [result, setResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -62,6 +64,20 @@ export default function EmailCampaignWorkspace() {
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Errore durante l'importazione.");
     } finally { setBusy(false); }
+  }
+
+  async function importFromLeadExtractor() {
+    if (!leadSegmentId.trim()) { setError("Inserisci l’identificativo del segmento o della ricerca B2B."); return; }
+    setLeadImportBusy(true); setError(""); setResult(null);
+    try {
+      const response = await fetch("/api/email-campaign/lead-extractor", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ campaignName, segmentId: leadSegmentId }) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Importazione dal Lead Extractor non riuscita.");
+      setResult(payload as ImportResult);
+      setReport(null);
+      setSaved(false);
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nel collegamento B2B."); }
+    finally { setLeadImportBusy(false); }
   }
 
   async function saveContent() {
@@ -168,9 +184,11 @@ export default function EmailCampaignWorkspace() {
       <p className="email-help">Colonna obbligatoria: email. Colonne facoltative: azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppresso, disiscritto. Formati ammessi: CSV e XLSX (primo foglio). Lo stato autorizzazione importato è solo informativo: tutti i destinatari entrano in revisione pending e devono essere approvati nell’app. L’importazione non invia email.</p>
       <button type="button" className="primary-action" disabled={busy || !file} onClick={importFile}>{busy ? "Importazione…" : "Importa destinatari"}</button>
     </div> : <div className="email-import-panel">
-      <h3>Collegamento diretto al Lead Extractor</h3>
-      <p>La modalità è prevista nel flusso dell'agente. L'adapter runtime del B2B Lead Extractor non è ancora collegato: fino al suo rilascio non vengono mostrati né importati record simulati.</p>
-      <span className="service-status status-planned">Connettore in implementazione</span>
+      <h3>Importazione diretta dal B2B Lead Extractor</h3>
+      <label>Nome campagna<input value={campaignName} onChange={(event) => setCampaignName(event.target.value)} /></label>
+      <label>ID segmento o ricerca<input value={leadSegmentId} onChange={(event) => setLeadSegmentId(event.target.value)} placeholder="Identificativo restituito dal Lead Extractor" /></label>
+      <p className="email-help">Il connettore richiede B2B_LEAD_EXTRACTOR_API_URL e B2B_LEAD_EXTRACTOR_API_KEY. Importa al massimo 50 record per batch. I contatti entrano sempre in revisione pending e con email non verificata.</p>
+      <button type="button" className="primary-action" onClick={importFromLeadExtractor} disabled={leadImportBusy || !leadSegmentId.trim()}>{leadImportBusy ? "Importazione…" : "Importa dal B2B Lead Extractor"}</button>
     </div>}
     {error && <div className="configurator-alert" role="alert">{error}</div>}
     {result && <div className="email-import-result" role="status">
