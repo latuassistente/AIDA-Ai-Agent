@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
-type CampaignReport = { recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending" }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
+type CampaignReport = { recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
 const starterEmailHtml = `<!doctype html>
 <html lang="it">
@@ -33,7 +33,7 @@ export default function EmailCampaignWorkspace() {
   const [error, setError] = useState("");
   const [report, setReport] = useState<CampaignReport | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
-  const [classifyingId, setClassifyingId] = useState<string | null>(null);
+  const [classifyingId, setClassifyingId] = useState<string | null>(null);\n  const [authBusyId, setAuthBusyId] = useState<string | null>(null);\n  const [authorizationInputs, setAuthorizationInputs] = useState<Record<string, { legalBasis: string; evidenceId: string }>>({});
   const [subject, setSubject] = useState("Una proposta per la tua attività");
   const [htmlContent, setHtmlContent] = useState(starterEmailHtml);
   const [contentBusy, setContentBusy] = useState(false);
@@ -84,6 +84,27 @@ export default function EmailCampaignWorkspace() {
       await loadReport();
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nella classificazione."); }
     finally { setClassifyingId(null); }
+  }
+
+  async function reviewAuthorization(recipientId: string, legalReview: "approved" | "rejected") {
+    if (!result) return;
+    const values = authorizationInputs[recipientId] ?? { legalBasis: "", evidenceId: "" };
+    if (legalReview === "approved" && (!values.legalBasis.trim() || !values.evidenceId.trim())) {
+      setError("Per approvare il destinatario inserisci base giuridica e riferimento alla prova documentale.");
+      return;
+    }
+    setAuthBusyId(recipientId); setError("");
+    try {
+      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/authorization`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientId, legalReview, legalBasis: values.legalBasis, authorizationEvidenceId: values.evidenceId }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Revisione autorizzazione non riuscita.");
+      await loadReport();
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nella revisione autorizzazione."); }
+    finally { setAuthBusyId(null); }
   }
 
   async function loadReport() {
@@ -153,6 +174,28 @@ export default function EmailCampaignWorkspace() {
           <div><strong>{report.bounced}</strong><span>bounce</span></div>
         </div>
         <p>{report.openTrackingCaveat}</p>
+        <div className="email-outcomes">
+          <strong>Revisione autorizzazioni destinatari</strong>
+          {report.recipientOutcomes.map((recipient) => {
+            const values = authorizationInputs[recipient.id] ?? { legalBasis: recipient.legalBasis ?? "", evidenceId: recipient.authorizationEvidenceId ?? "" };
+            return <div className="email-outcome-row" key={recipient.id}>
+              <div className="email-authorization-person">
+                <b>{recipient.contactName || recipient.companyName || recipient.email}</b>
+                <span>{recipient.email}</span>
+                <span>Autorizzazione: {recipient.legalReview} · Verifica email: {recipient.verificationStatus}</span>
+              </div>
+              <div className="email-authorization-fields">
+                <input aria-label="Base giuridica" placeholder="Base giuridica" value={values.legalBasis} onChange={(event) => setAuthorizationInputs((current) => ({ ...current, [recipient.id]: { ...values, legalBasis: event.target.value } }))} />
+                <input aria-label="Riferimento prova documentale" placeholder="Riferimento prova documentale" value={values.evidenceId} onChange={(event) => setAuthorizationInputs((current) => ({ ...current, [recipient.id]: { ...values, evidenceId: event.target.value } }))} />
+                <div className="email-outcome-actions">
+                  <button type="button" className={recipient.legalReview === "approved" ? "selected" : ""} disabled={authBusyId === recipient.id} onClick={() => reviewAuthorization(recipient.id, "approved")}>Approva</button>
+                  <button type="button" className={recipient.legalReview === "rejected" ? "selected" : ""} disabled={authBusyId === recipient.id} onClick={() => reviewAuthorization(recipient.id, "rejected")}>Rifiuta</button>
+                </div>
+              </div>
+            </div>;
+          })}
+          <p>L'importazione non autorizza automaticamente i destinatari. L'approvazione richiede una revisione umana e un riferimento alla prova documentale; l'idoneità finale richiede anche verifica email valida e assenza di soppressione/disiscrizione.</p>
+        </div>
         <div className="email-outcomes"><strong>Classificazione delle risposte</strong>{report.recipientOutcomes.filter((recipient) => recipient.hasReply).length === 0 ? <p>Nessuna risposta registrata al momento.</p> : report.recipientOutcomes.filter((recipient) => recipient.hasReply).map((recipient) => <div className="email-outcome-row" key={recipient.id}><div><b>{recipient.contactName || recipient.companyName || recipient.email}</b><span>{recipient.email}</span></div><div className="email-outcome-actions"><button type="button" className={recipient.outcome === "positive" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "positive")}>Positiva</button><button type="button" className={recipient.outcome === "ko" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "ko")}>KO</button><button type="button" className={recipient.outcome === "pending" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "pending")}>In attesa</button></div></div>)}</div>
       </div>}
     </div>}
