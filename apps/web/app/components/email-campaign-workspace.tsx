@@ -42,6 +42,8 @@ export default function EmailCampaignWorkspace() {
   const [contentBusy, setContentBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [sendBusy, setSendBusy] = useState(false);
+  const [verifyBusy, setVerifyBusy] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ checked: number; remaining: number; results: Record<string, number> } | null>(null);
   const [sendResult, setSendResult] = useState<SendResult | null>(null);
 
   async function importFile() {
@@ -112,6 +114,19 @@ export default function EmailCampaignWorkspace() {
     finally { setAuthBusyId(null); }
   }
 
+  async function verifyEmails() {
+    if (!result) return;
+    setVerifyBusy(true); setError(""); setVerifyResult(null);
+    try {
+      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/verify`, { method: "POST" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Verifica email non riuscita.");
+      setVerifyResult(payload);
+      await loadReport();
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore durante la verifica."); }
+    finally { setVerifyBusy(false); }
+  }
+
   async function sendCampaign() {
     if (!result || !saved || !window.confirm("Confermi l’invio reale dei prossimi 50 messaggi ai soli destinatari autorizzati e verificati?")) return;
     setSendBusy(true); setError(""); setSendResult(null);
@@ -178,7 +193,8 @@ export default function EmailCampaignWorkspace() {
         <iframe title="Anteprima email HTML" sandbox="" srcDoc={htmlContent} className="email-html-preview" />
         <p className="email-help">L'anteprima è isolata. Il salvataggio conserva la bozza; non esegue invii.</p>
       </div>
-      <div className="email-send-actions"><button type="button" className="primary-action" onClick={sendCampaign} disabled={sendBusy || !saved}>{sendBusy ? "Invio in corso…" : "Invia prossimi 50 destinatari"}</button><span className="email-help">Invio reale. Richiede provider configurato, autorizzazione approvata e email verificata.</span></div>
+      <div className="email-send-actions"><button type="button" className="secondary-action" onClick={verifyEmails} disabled={verifyBusy}>{verifyBusy ? "Verifica in corso…" : "Verifica prossimi 50 indirizzi"}</button><button type="button" className="primary-action" onClick={sendCampaign} disabled={sendBusy || !saved}>{sendBusy ? "Invio in corso…" : "Invia prossimi 50 destinatari"}</button><span className="email-help">Invio reale. Richiede provider configurato, autorizzazione approvata e email verificata.</span></div>
+      {verifyResult && <p role="status">Verificati {verifyResult.checked} indirizzi; {verifyResult.remaining} ancora da verificare. Esiti: {Object.entries(verifyResult.results).map(([key, value]) => `${key} ${value}`).join(" · ")}.</p>}
       {sendResult && <p role="status">Batch concluso: {sendResult.sent} inviate, {sendResult.failed} non riuscite, {sendResult.remaining} ancora da inviare. Stato: {sendResult.status}.</p>}
       <button type="button" className="secondary-action" onClick={loadReport} disabled={reportBusy}>{reportBusy ? "Caricamento report…" : "Apri report campagna"}</button>
       {report && <div className="email-report">
