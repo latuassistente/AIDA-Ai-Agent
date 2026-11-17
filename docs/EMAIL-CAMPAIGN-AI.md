@@ -4,7 +4,7 @@
 
 La campagna supporta due modalità selezionabili:
 
-1. **Caricamento manuale**: upload di una lista CSV o XLSX nell'interfaccia. L'importazione attualmente supporta CSV e XLSX (primo foglio), con colonna email obbligatoria e campi facoltativi per azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppressione e disiscrizione. L'importazione riepiloga righe importate, duplicati e indirizzi non validi. La lista conserva il file sorgente, il tenant, la data di importazione e la provenienza dei singoli record.
+1. **Caricamento manuale**: upload di una lista CSV o XLSX nell'interfaccia. L'importazione attualmente supporta CSV e XLSX (primo foglio), con colonna email obbligatoria e campi facoltativi per azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppressione e disiscrizione. L'importazione riepiloga righe importate, duplicati e indirizzi non validi. La campagna conserva il tenant e la data di creazione; il nome del file sorgente e il riepilogo dell'importazione sono registrati nell'audit log. Il file originale non viene archiviato.
 2. **Collegamento B2B Lead Extractor AI**: selezione di una ricerca, segmento o archivio prodotto dall'agente B2B. L'integrazione passa gli ID dei record e non copia contatti che non abbiano superato il controllo di idoneità al marketing. I record importati mantengono il riferimento al lead originale.
 
 Le due modalità confluiscono nello stesso controllo di idoneità, deduplicazione e verifica. La sola presenza di un indirizzo email in un file o su una pagina pubblica non lo rende automaticamente utilizzabile per una campagna.
