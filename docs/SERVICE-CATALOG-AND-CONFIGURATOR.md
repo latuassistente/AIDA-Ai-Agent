@@ -8,7 +8,7 @@ Il prodotto SaaS derivato deve essere modulare, personalizzabile, vendibile e wh
 
 ## Stato verificato del repository
 
-Il repository contiene un registro predefinito di 38 agenti specialistici, un catalogo tipizzato di 47 servizi e un configuratore con risoluzione ricorsiva delle dipendenze, controllo del piano, policy allow/deny per tenant e stato di pausa. I test dedicati verificano unicità, riferimenti, dipendenze, autorizzazioni e classificazione dello stato. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
+Il repository contiene un registro predefinito di 38 agenti specialistici, un catalogo tipizzato di 51 servizi e un configuratore con risoluzione ricorsiva delle dipendenze, controllo del piano, policy allow/deny per tenant e stato di pausa. I test dedicati verificano unicità, riferimenti, dipendenze, autorizzazioni e classificazione dello stato. La dashboard è ancora una prima control center. La presenza di agenti o servizi nel catalogo non dimostra che ogni funzionalità o integrazione esterna sia operativa.
 
 ## Aree del catalogo
 
@@ -57,7 +57,7 @@ Prezzi, quote e limiti devono provenire da configurazioni amministrative version
 
 Le responsabilità esistenti vengono estese quando coprono già un compito (ad esempio social media dentro Content, segreteria dentro Business Operations, workflow dentro Software and Automation). Document and Records e Legal Support sono specialisti distinti perché il roster precedente non conteneva ruoli dedicati.
 
-Il configuratore deve consentire di selezionare servizi singoli o pacchetti, visualizzare prerequisiti e dipendenze, stimare costi/consumi, abilitare/disabilitare moduli e configurare permessi. Deve distinguere chiaramente:
+I primi tre servizi prioritari P0 sono: B2B Lead Extractor AI (estrazione, arricchimento, normalizzazione, deduplicazione ed export), PC File Manager AI (ricerca e riordino dei file locali) ed Email Campaign AI (demo HTML responsive e invio a destinatari autorizzati). Il configuratore deve consentire di selezionare servizi singoli o pacchetti, visualizzare prerequisiti e dipendenze, stimare costi/consumi, abilitare/disabilitare moduli e configurare permessi. Deve distinguere chiaramente:
 
 - disponibile e testato;
 - disponibile ma da configurare;
@@ -129,7 +129,7 @@ Il risultato deve essere una configurazione leggibile con riepilogo funzionale, 
 
 ## Team di agenti
 
-Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. Comprende 38 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Document and Records, Legal Support, Human Handoff, Execution, Prompt Engineering, Translation and Localization, Backup and Recovery, Agent Quality and Oversight e Proactive Monitoring and Alerts.
+Il roster tecnico ufficiale è mantenuto in `packages/agents/src/catalog.ts` e documentato in `docs/AGENT-SYSTEM.md`. I tre ruoli P0 riutilizzano gli ID stabili `lead-prospecting`, `document` e `omnichannel-communications`, evitando duplicazioni nel runtime. Comprende 38 agenti specialistici: Business Knowledge, Research, FIND, Lead/Prospecting, Business Audit, Marketing Strategy, Content/Copy, Advertising Campaigns, SEO/GEO, Web Studio, 3D/4D Experience, Software/Automation, QA/Test, Omnichannel Communications, Customer Support, Voice/Telephony, Appointment/Scheduling, BOOKING, Proposal/Quotation, Sales/CRM, Customer Success, Delivery/Project, Analytics/BI, Business Operations, Finance/Administration, HR/Recruiting, Training/Professor Tech, Integration/API, Security/Compliance, Document and Records, Legal Support, Human Handoff, Execution, Prompt Engineering, Translation and Localization, Backup and Recovery, Agent Quality and Oversight e Proactive Monitoring and Alerts.
 
 Orchestrator e Planner sono componenti centrali di coordinamento, non specialisti autonomi in concorrenza tra loro. Gli specialisti non ridefiniscono l'obiettivo globale: ricevono un incarico delimitato, producono risultati strutturati e restituiscono evidenze al coordinatore.
 
