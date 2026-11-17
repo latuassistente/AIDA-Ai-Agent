@@ -165,7 +165,7 @@ export default function EmailCampaignWorkspace() {
     {mode === "upload" ? <div className="email-import-panel">
       <label>Nome campagna<input value={campaignName} onChange={(event) => setCampaignName(event.target.value)} /></label>
       <label>Lista destinatari (CSV o XLSX)<input type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { setFile(event.target.files?.[0] ?? null); setResult(null); }} /></label>
-      <p className="email-help">Colonna obbligatoria: email. Colonne facoltative: azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppresso, disiscritto. Formati ammessi: CSV e XLSX (primo foglio). L’importazione non invia email.</p>
+      <p className="email-help">Colonna obbligatoria: email. Colonne facoltative: azienda, referente, base giuridica, prova autorizzazione, stato autorizzazione, soppresso, disiscritto. Formati ammessi: CSV e XLSX (primo foglio). Lo stato autorizzazione importato è solo informativo: tutti i destinatari entrano in revisione pending e devono essere approvati nell’app. L’importazione non invia email.</p>
       <button type="button" className="primary-action" disabled={busy || !file} onClick={importFile}>{busy ? "Importazione…" : "Importa destinatari"}</button>
     </div> : <div className="email-import-panel">
       <h3>Collegamento diretto al Lead Extractor</h3>
