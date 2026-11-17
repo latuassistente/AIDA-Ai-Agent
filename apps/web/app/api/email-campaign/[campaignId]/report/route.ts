@@ -48,6 +48,7 @@ export async function GET(_request: Request, context: Context) {
     opensDetected: count("opened"),
     clicks: count("clicked"),
     replies,
+    noReplies: Math.max(0, count("sent") - replies),
     positive,
     ko,
     pendingOutcome: Math.max(0, replies - positive - ko),
