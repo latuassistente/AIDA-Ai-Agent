@@ -166,6 +166,8 @@ export default function EmailCampaignWorkspace() {
       {report && <div className="email-report">
         <strong>Report campagna</strong>
         <div className="preview-stats">
+          <div><strong>{report.eligible}</strong><span>destinatari idonei</span></div>
+          <div><strong>{report.excluded}</strong><span>destinatari esclusi</span></div>
           <div><strong>{report.sent}</strong><span>inviate</span></div>
           <div><strong>{report.delivered}</strong><span>consegnate</span></div>
           <div><strong>{report.opensDetected}</strong><span>aperture rilevate</span></div>
