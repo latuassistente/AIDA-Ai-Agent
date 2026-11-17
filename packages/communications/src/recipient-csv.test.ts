@@ -16,4 +16,13 @@ describe("recipient CSV parser", () => {
   it("requires an email column", () => {
     expect(() => parseRecipientCsv("azienda\nAlfa")).toThrow("Colonna obbligatoria mancante: email.");
   });
+
+  it("preserves newlines inside quoted CSV fields", () => {
+    const rows = parseRecipientCsv('email,azienda\ninfo@example.it,"Alfa\nSrl"');
+    expect(rows[0]?.companyName).toBe("Alfa\nSrl");
+  });
+
+  it("rejects unbalanced quotes", () => {
+    expect(() => parseRecipientCsv('email,azienda\ninfo@example.it,"Alfa')).toThrow("virgolette non bilanciate");
+  });
 });
