@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
+type SendResult = { attempted: number; sent: number; failed: number; sentTotal: number; eligible: number; remaining: number; complete: boolean; status: string };
 type CampaignReport = { recipientOutcomes: Array<{ id: string; email: string; companyName: string | null; contactName: string | null; hasReply: boolean; outcome: "positive" | "ko" | "pending"; legalReview: "approved" | "pending" | "rejected"; legalBasis: string | null; authorizationEvidenceId: string | null; verificationStatus: string }>; recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; unsubscribed: number; complaints: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
 const starterEmailHtml = `<!doctype html>
@@ -22,7 +23,7 @@ h1{font-size:27px;line-height:1.2;margin:0 0 18px}.button{display:inline-block;b
 <p>Buongiorno,</p><p>inserisci qui il testo della tua comunicazione. Mantieni il messaggio chiaro, pertinente e coerente con il consenso e la base giuridica verificati per ogni destinatario.</p>
 <p style="margin:28px 0"><a class="button" href="https://example.com">Scopri di più</a></p>
 <p> Cordiali saluti,<br><strong>Il tuo team</strong></p>
-</main><footer class="footer">Ragione sociale · Indirizzo · Informazioni sulla disiscrizione</footer></div></div></body></html>`;
+</main><footer class="footer">Ragione sociale · Indirizzo · <a href="{{unsubscribe_url}}">Disiscriviti</a></footer></div></div></body></html>`;
 
 export default function EmailCampaignWorkspace() {
   const [mode, setMode] = useState<"upload" | "lead-extractor">("upload");
@@ -40,6 +41,8 @@ export default function EmailCampaignWorkspace() {
   const [htmlContent, setHtmlContent] = useState(starterEmailHtml);
   const [contentBusy, setContentBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [sendBusy, setSendBusy] = useState(false);
+  const [sendResult, setSendResult] = useState<SendResult | null>(null);
 
   async function importFile() {
     if (!file) { setError("Seleziona un file CSV o XLSX."); return; }
@@ -109,6 +112,19 @@ export default function EmailCampaignWorkspace() {
     finally { setAuthBusyId(null); }
   }
 
+  async function sendCampaign() {
+    if (!result || !saved || !window.confirm("Confermi l’invio reale dei prossimi 50 messaggi ai soli destinatari autorizzati e verificati?")) return;
+    setSendBusy(true); setError(""); setSendResult(null);
+    try {
+      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/send`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmSend: true }) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Invio non riuscito.");
+      setSendResult(payload as SendResult);
+      await loadReport();
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore durante l’invio."); }
+    finally { setSendBusy(false); }
+  }
+
   async function loadReport() {
     if (!result) return;
     setReportBusy(true); setError("");
@@ -162,6 +178,8 @@ export default function EmailCampaignWorkspace() {
         <iframe title="Anteprima email HTML" sandbox="" srcDoc={htmlContent} className="email-html-preview" />
         <p className="email-help">L'anteprima è isolata. Il salvataggio conserva la bozza; non esegue invii.</p>
       </div>
+      <div className="email-send-actions"><button type="button" className="primary-action" onClick={sendCampaign} disabled={sendBusy || !saved}>{sendBusy ? "Invio in corso…" : "Invia prossimi 50 destinatari"}</button><span className="email-help">Invio reale. Richiede provider configurato, autorizzazione approvata e email verificata.</span></div>
+      {sendResult && <p role="status">Batch concluso: {sendResult.sent} inviate, {sendResult.failed} non riuscite, {sendResult.remaining} ancora da inviare. Stato: {sendResult.status}.</p>}
       <button type="button" className="secondary-action" onClick={loadReport} disabled={reportBusy}>{reportBusy ? "Caricamento report…" : "Apri report campagna"}</button>
       {report && <div className="email-report">
         <strong>Report campagna</strong>
