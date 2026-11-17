@@ -11,7 +11,7 @@ Le due modalità confluiscono nello stesso controllo di idoneità, deduplicazion
 
 ## Verifica degli indirizzi
 
-La verifica deve essere eseguita da un provider collegato e registrare provider, data, esito e motivazione. Stati ammessi: `valid`, `invalid`, `unknown`, `risky`. Il controllo locale della sintassi non dimostra che una casella esista. I controlli DNS/MX attestano la configurazione del dominio, non la singola casella. Il sistema non deve dichiarare una casella "attiva" senza un risultato attendibile del provider; non deve simulare verifiche SMTP invasive né inviare messaggi di prova a destinatari non autorizzati.
+La verifica deve essere eseguita da un provider collegato e registrare provider, data ed esito. Stati ammessi: `valid`, `invalid`, `unknown`, `risky`. Il controllo locale della sintassi non dimostra che una casella esista. I controlli DNS/MX attestano la configurazione del dominio, non la singola casella. Il sistema non deve dichiarare una casella "attiva" senza un risultato attendibile del provider; non deve simulare verifiche SMTP invasive né inviare messaggi di prova a destinatari non autorizzati.
 
 ## Composizione e invio
 
@@ -46,7 +46,7 @@ Il report deve includere almeno:
 
 ## Stato implementativo
 
-Il modulo contiene upload CSV/XLSX, storage multi-tenant, editor HTML con anteprima, report, endpoint webhook firmato e classificazione manuale delle risposte. Verifica provider, provider di invio, sincronizzazione inbox/reply e connettore runtime B2B richiedono ancora gli adapter e i test end-to-end prima che il servizio possa essere marcato operativo.
+Il modulo contiene upload CSV/XLSX, storage multi-tenant, editor HTML con anteprima, revisione autorizzazioni, batch di verifica email, invio batch tramite adapter HTTP configurabile, disiscrizione firmata, report, webhook firmato e classificazione manuale delle risposte. Restano da collegare i provider reali e il connettore runtime B2B, oltre alla sincronizzazione inbox/reply e ai test end-to-end.
 
 ## Prima implementazione registrata nel repository
 
@@ -58,9 +58,9 @@ Il modulo contiene upload CSV/XLSX, storage multi-tenant, editor HTML con antepr
 - Persistenza PostgreSQL per campagne, destinatari ed eventi, con migration Prisma.
 - Endpoint report tenant-scoped per inviate, consegnate, bounce, aperture rilevate, clic, risposte, positive, KO e in attesa, con elenco destinatari e stato di revisione autorizzazione.
 - Endpoint webhook con firma HMAC-SHA256 e deduplicazione eventi; endpoint autenticato per classificare manualmente le risposte positive/KO e modificarne l'esito.
-- Contratti provider per verifica email, invio e sincronizzazione risposte; renderer HTML responsive con escaping e validazione URL.
+- Adapter HTTP configurabili per verifica e invio, endpoint self-service di disiscrizione con token HMAC e header List-Unsubscribe; renderer HTML responsive con escaping e validazione URL.
 
-L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Provider di verifica, provider di invio, configurazione del webhook presso un provider reale, inbox/reply sync e adapter B2B restano da integrare. L'importazione crea una campagna in bozza e non invia messaggi.
+L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Gli adapter di verifica e invio sono implementati ma richiedono URL, credenziali e un provider conforme al contratto AIDA. Restano da configurare il webhook presso un provider reale, l'inbox/reply sync e l'adapter runtime B2B. L'importazione crea una campagna in bozza e non invia messaggi.
 
 
 ## Ingestione eventi e classificazione delle risposte
