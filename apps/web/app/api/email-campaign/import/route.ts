@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseRecipientCsv } from "../../../../../../packages/communications/src/recipient-csv";
+import { parseRecipientXlsx } from "../../../../../../packages/communications/src/recipient-xlsx";
 import { prisma } from "../../../../lib/prisma";
 import { getVerifiedAidaSession } from "../../../../lib/verified-session";
 
@@ -20,16 +21,21 @@ export async function POST(request: Request) {
 
   const file = form.get("file");
   const campaignName = form.get("campaignName");
-  if (!(file instanceof File)) return NextResponse.json({ error: "Carica un file CSV." }, { status: 400 });
-  if (!file.name.toLowerCase().endsWith(".csv") || file.size > MAX_UPLOAD_BYTES) {
-    return NextResponse.json({ error: "Formato non supportato o file oltre 5 MB. Carica un CSV." }, { status: 400 });
+  if (!(file instanceof File)) return NextResponse.json({ error: "Carica un file CSV o XLSX." }, { status: 400 });
+  const extension = file.name.toLowerCase().split(".").pop();
+  if ((extension !== "csv" && extension !== "xlsx") || file.size > MAX_UPLOAD_BYTES) {
+    return NextResponse.json({ error: "Formato non supportato o file oltre 5 MB. Carica un CSV o XLSX." }, { status: 400 });
   }
   if (typeof campaignName !== "string" || !campaignName.trim() || campaignName.length > 160) {
     return NextResponse.json({ error: "Nome campagna obbligatorio (massimo 160 caratteri)." }, { status: 400 });
   }
 
   let rows;
-  try { rows = parseRecipientCsv(await file.text()); }
+  try {
+    rows = extension === "xlsx"
+      ? parseRecipientXlsx(new Uint8Array(await file.arrayBuffer()))
+      : parseRecipientCsv(await file.text());
+  }
   catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "CSV non valido." }, { status: 400 });
   }
@@ -79,7 +85,7 @@ export async function POST(request: Request) {
       action: "EMAIL_CAMPAIGN_RECIPIENTS_IMPORTED",
       decision: "ALLOW",
       target: campaign.id,
-      details: { source: "UPLOAD", imported: campaign.recipients.length, duplicates, invalid, fileName: file.name },
+      details: { source: "UPLOAD", imported: campaign.recipients.length, duplicates, invalid, fileName: file.name, fileType: extension },
     },
   });
 
