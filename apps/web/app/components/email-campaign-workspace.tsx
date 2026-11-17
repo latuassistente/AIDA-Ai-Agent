@@ -32,7 +32,8 @@ export default function EmailCampaignWorkspace() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [report, setReport] = useState<CampaignReport | null>(null);
-  const [reportBusy, setReportBusy] = useState(false);\n  const [classifyingId, setClassifyingId] = useState<string | null>(null);
+  const [reportBusy, setReportBusy] = useState(false);
+  const [classifyingId, setClassifyingId] = useState<string | null>(null);
   const [subject, setSubject] = useState("Una proposta per la tua attività");
   const [htmlContent, setHtmlContent] = useState(starterEmailHtml);
   const [contentBusy, setContentBusy] = useState(false);
@@ -73,7 +74,19 @@ export default function EmailCampaignWorkspace() {
     } finally { setContentBusy(false); }
   }
 
-  async function classifyOutcome(recipientId: string, outcome: "positive" | "ko" | "pending") {\n    if (!result) return;\n    setClassifyingId(recipientId); setError("");\n    try {\n      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/outcomes`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ recipientId, outcome }) });\n      const payload = await response.json();\n      if (!response.ok) throw new Error(payload.error ?? "Classificazione non riuscita.");\n      await loadReport();\n    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nella classificazione."); }\n    finally { setClassifyingId(null); }\n  }\n\n  async function loadReport() {
+  async function classifyOutcome(recipientId: string, outcome: "positive" | "ko" | "pending") {
+    if (!result) return;
+    setClassifyingId(recipientId); setError("");
+    try {
+      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/outcomes`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ recipientId, outcome }) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Classificazione non riuscita.");
+      await loadReport();
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nella classificazione."); }
+    finally { setClassifyingId(null); }
+  }
+
+  async function loadReport() {
     if (!result) return;
     setReportBusy(true); setError("");
     try {
@@ -139,7 +152,8 @@ export default function EmailCampaignWorkspace() {
           <div><strong>{report.pendingOutcome}</strong><span>esito in attesa</span></div>
           <div><strong>{report.bounced}</strong><span>bounce</span></div>
         </div>
-        <p>{report.openTrackingCaveat}</p>\n        <div className="email-outcomes"><strong>Classificazione delle risposte</strong>{report.recipientOutcomes.filter((recipient) => recipient.hasReply).length === 0 ? <p>Nessuna risposta registrata al momento.</p> : report.recipientOutcomes.filter((recipient) => recipient.hasReply).map((recipient) => <div className="email-outcome-row" key={recipient.id}><div><b>{recipient.contactName || recipient.companyName || recipient.email}</b><span>{recipient.email}</span></div><div className="email-outcome-actions"><button type="button" className={recipient.outcome === "positive" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "positive")}>Positiva</button><button type="button" className={recipient.outcome === "ko" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "ko")}>KO</button><button type="button" className={recipient.outcome === "pending" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "pending")}>In attesa</button></div></div>)}</div>
+        <p>{report.openTrackingCaveat}</p>
+        <div className="email-outcomes"><strong>Classificazione delle risposte</strong>{report.recipientOutcomes.filter((recipient) => recipient.hasReply).length === 0 ? <p>Nessuna risposta registrata al momento.</p> : report.recipientOutcomes.filter((recipient) => recipient.hasReply).map((recipient) => <div className="email-outcome-row" key={recipient.id}><div><b>{recipient.contactName || recipient.companyName || recipient.email}</b><span>{recipient.email}</span></div><div className="email-outcome-actions"><button type="button" className={recipient.outcome === "positive" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "positive")}>Positiva</button><button type="button" className={recipient.outcome === "ko" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "ko")}>KO</button><button type="button" className={recipient.outcome === "pending" ? "selected" : ""} disabled={classifyingId === recipient.id} onClick={() => classifyOutcome(recipient.id, "pending")}>In attesa</button></div></div>)}</div>
       </div>}
     </div>}
   </section>;
