@@ -23,7 +23,7 @@ function htmlPage(token: string): string {
 export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get("token") ?? "";
   const secret = process.env.EMAIL_CAMPAIGN_UNSUBSCRIBE_SECRET;
-  if (!secret || !verifyToken(token, secret)) {
+  if (!secret || secret.length < 32 || !verifyToken(token, secret)) {
     return new NextResponse("Link di disiscrizione non valido o scaduto.", { status: 400 });
   }
   return new NextResponse(htmlPage(token), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
@@ -31,16 +31,16 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const secret = process.env.EMAIL_CAMPAIGN_UNSUBSCRIBE_SECRET;
-  if (!secret) return NextResponse.json({ error: "Disiscrizione non configurata." }, { status: 503 });
-  let token = "";
+  if (!secret || secret.length < 32) return NextResponse.json({ error: "Disiscrizione non configurata o segreto troppo corto." }, { status: 503 });
+  let token = new URL(request.url).searchParams.get("token") ?? "";
   const contentType = request.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
     const payload = await request.json().catch(() => null) as { token?: unknown } | null;
-    token = typeof payload?.token === "string" ? payload.token : "";
+    if (!token) token = typeof payload?.token === "string" ? payload.token : "";
   } else {
     const form = await request.formData().catch(() => null);
     const value = form?.get("token");
-    token = typeof value === "string" ? value : "";
+    if (!token) token = typeof value === "string" ? value : "";
   }
   const verified = verifyToken(token, secret);
   if (!verified) return NextResponse.json({ error: "Link di disiscrizione non valido o scaduto." }, { status: 400 });
