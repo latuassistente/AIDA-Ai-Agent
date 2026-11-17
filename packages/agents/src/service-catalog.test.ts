@@ -59,6 +59,14 @@ describe("AIDA universal service configurator", () => {
     expect(result.errors).toContain("Unknown service: not-a-service");
   });
 
+  it("registers the three priority agent services with their required workflows", () => {
+    expect(getServiceById("leads.extractor")?.agentId).toBe("lead-prospecting");
+    expect(getServiceById("leads.enrichment-quality")?.dependencies).toContain("leads.extractor");
+    expect(getServiceById("desktop.file-manager")?.agentId).toBe("document");
+    expect(getServiceById("communications.email-campaign-ai")?.agentId).toBe("omnichannel-communications");
+    expect(getServiceById("communications.email-campaign-ai")?.dependencies).not.toContain("leads.enrichment-quality");
+  });
+
   it("exposes stable service lookups", () => {
     expect(getServiceById("ai.prompt-engineering")?.agentId).toBe("prompt-engineering");
     expect(getServiceById("operations.backup-recovery")?.riskLevel).toBe("YELLOW");
