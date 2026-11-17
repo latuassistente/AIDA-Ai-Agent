@@ -61,4 +61,11 @@ describe("recipient XLSX parser", () => {
   it("rejects data that is not an XLSX ZIP archive", () => {
     expect(() => parseRecipientXlsx(Buffer.from("not-an-xlsx"))).toThrow("archivio ZIP non trovato");
   });
+
+  it("reads shared-string cells used by standard spreadsheet exports", () => {
+    const shared = "<sst><si><t>email</t></si><si><t>info@example.it</t></si></sst>";
+    const worksheet = '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c></row><row r="2"><c r="A2" t="s"><v>1</v></c></row></sheetData></worksheet>';
+    const file = makeStoredZip({ "xl/sharedStrings.xml": shared, "xl/worksheets/sheet1.xml": worksheet });
+    expect(parseRecipientXlsx(file)[0]?.email).toBe("info@example.it");
+  });
 });
