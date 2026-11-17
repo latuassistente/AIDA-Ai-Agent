@@ -30,7 +30,7 @@ export async function POST(request: Request, context: Context) {
   const from = process.env.EMAIL_DELIVERY_FROM;
   const unsubscribeSecret = process.env.EMAIL_CAMPAIGN_UNSUBSCRIBE_SECRET;
   const appBaseUrl = process.env.APP_BASE_URL;
-  if (!deliveryEndpoint || !deliveryKey || !from || !unsubscribeSecret || !appBaseUrl) {
+  if (!deliveryEndpoint || !deliveryKey || !from || !unsubscribeSecret || unsubscribeSecret.length < 32 || !appBaseUrl) {
     return NextResponse.json({ error: "Provider di invio o configurazione disiscrizione non completi." }, { status: 503 });
   }
   let providerUrl: URL;
