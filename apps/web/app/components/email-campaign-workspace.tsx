@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };
+type ImportResult = { campaignId: string; imported: number; duplicates: number; invalid: number; status: string };\ntype CampaignReport = { recipients: number; eligible: number; excluded: number; sent: number; delivered: number; bounced: number; opensDetected: number; clicks: number; replies: number; positive: number; ko: number; pendingOutcome: number; readReceiptsAvailable: false; openTrackingCaveat: string };
 
 export default function EmailCampaignWorkspace() {
   const [mode, setMode] = useState<"upload" | "lead-extractor">("upload");
@@ -10,7 +10,7 @@ export default function EmailCampaignWorkspace() {
   const [campaignName, setCampaignName] = useState("Nuova campagna");
   const [result, setResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState("");\n  const [report, setReport] = useState<CampaignReport | null>(null);\n  const [reportBusy, setReportBusy] = useState(false);
 
   async function importFile() {
     if (!file) { setError("Seleziona un file CSV."); return; }
@@ -22,13 +22,13 @@ export default function EmailCampaignWorkspace() {
       const response = await fetch("/api/email-campaign/import", { method: "POST", body: data });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Importazione non riuscita.");
-      setResult(payload as ImportResult);
+      setResult(payload as ImportResult);\n      setReport(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Errore durante l'importazione.");
     } finally { setBusy(false); }
   }
 
-  return <section className="email-workspace" id="email-campaign-ai">
+  async function loadReport() {\n    if (!result) return;\n    setReportBusy(true); setError("");\n    try {\n      const response = await fetch(`/api/email-campaign/${encodeURIComponent(result.campaignId)}/report`);\n      const payload = await response.json();\n      if (!response.ok) throw new Error(payload.error ?? "Report non disponibile.");\n      setReport(payload as CampaignReport);\n    } catch (reason) { setError(reason instanceof Error ? reason.message : "Errore nel report."); }\n    finally { setReportBusy(false); }\n  }\n\n  return <section className="email-workspace" id="email-campaign-ai">
     <div className="configurator-heading">
       <div><span className="eyebrow">AGENTE P0 · EMAIL CAMPAIGN AI</span><h2>Destinatari e campagne email</h2>
         <p>Carica una lista oppure seleziona i contatti idonei prodotti da B2B Lead Extractor AI.</p></div>
@@ -56,7 +56,7 @@ export default function EmailCampaignWorkspace() {
         <div><strong>{result.duplicates}</strong><span>duplicati esclusi</span></div>
         <div><strong>{result.invalid}</strong><span>email non valide</span></div>
       </div>
-      <p>Stato: {result.status}. Nessun invio effettuato.</p>
+      <p>Stato: {result.status}. Nessun invio effettuato.</p>\n      <button type="button" className="secondary-action" onClick={loadReport} disabled={reportBusy}>{reportBusy ? "Caricamento report…" : "Apri report campagna"}</button>\n      {report && <div className="email-report">\n        <strong>Report campagna</strong>\n        <div className="preview-stats">\n          <div><strong>{report.sent}</strong><span>inviate</span></div>\n          <div><strong>{report.delivered}</strong><span>consegnate</span></div>\n          <div><strong>{report.opensDetected}</strong><span>aperture rilevate</span></div>\n          <div><strong>{report.replies}</strong><span>risposte</span></div>\n          <div><strong>{report.positive}</strong><span>positive</span></div>\n          <div><strong>{report.ko}</strong><span>KO</span></div>\n          <div><strong>{report.pendingOutcome}</strong><span>esito in attesa</span></div>\n          <div><strong>{report.bounced}</strong><span>bounce</span></div>\n        </div>\n        <p>{report.openTrackingCaveat}</p>\n      </div>}
     </div>}
   </section>;
 }
