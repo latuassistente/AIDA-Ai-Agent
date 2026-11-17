@@ -39,13 +39,14 @@ export function parseRecipientCsv(csv: string): ImportedEmailRow[] {
   return lines.slice(1).map((line) => {
     const values = parseCsvLine(line, delimiter);
     const legalReviewValue = get(values, find("legalreview", "stato autorizzazione")).toLowerCase();
+    const legalReview: ImportedEmailRow["legalReview"] = legalReviewValue === "approved" || legalReviewValue === "approvato" ? "approved" : legalReviewValue === "rejected" || legalReviewValue === "rifiutato" ? "rejected" : "pending";
     return {
       email: get(values, emailIndex),
       ...(get(values, find("companyname", "azienda", "ragione sociale")) ? { companyName: get(values, find("companyname", "azienda", "ragione sociale")) } : {}),
       ...(get(values, find("contactname", "referente", "nome contatto")) ? { contactName: get(values, find("contactname", "referente", "nome contatto")) } : {}),
       ...(get(values, find("legalbasis", "base giuridica")) ? { legalBasis: get(values, find("legalbasis", "base giuridica")) } : {}),
       ...(get(values, find("authorizationevidenceid", "prova autorizzazione", "id autorizzazione")) ? { authorizationEvidenceId: get(values, find("authorizationevidenceid", "prova autorizzazione", "id autorizzazione")) } : {}),
-      legalReview: legalReviewValue === "approved" || legalReviewValue === "approvato" ? "approved" : legalReviewValue === "rejected" || legalReviewValue === "rifiutato" ? "rejected" : "pending",
+      legalReview,
       suppressed: ["1", "true", "si", "sì", "yes"].includes(get(values, find("suppressed", "soppresso")).toLowerCase()),
       unsubscribed: ["1", "true", "si", "sì", "yes"].includes(get(values, find("unsubscribed", "disiscritto")).toLowerCase()),
     };
