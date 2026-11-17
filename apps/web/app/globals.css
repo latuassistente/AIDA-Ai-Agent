@@ -166,3 +166,9 @@ footer{display:flex;justify-content:space-between;color:#9a9eaa;font:400 9px 'DM
 .email-outcome-actions button.selected{background:#202635;color:#fff;border-color:#202635}
 .email-outcome-actions button:disabled{opacity:.5;cursor:wait}
 @media(max-width:600px){.email-outcome-row{align-items:flex-start;flex-direction:column}.email-outcome-actions{justify-content:flex-start}}
+
+.email-authorization-person{display:grid;gap:3px;min-width:0}
+.email-authorization-person>span{font-size:9px;color:#777d89;overflow-wrap:anywhere}
+.email-authorization-fields{display:grid;gap:6px;min-width:260px;flex:1}
+.email-authorization-fields input{width:100%;border:1px solid #dfe2e8;border-radius:6px;padding:7px 8px;background:#fff;font:10px 'DM Sans',sans-serif}
+@media(max-width:600px){.email-authorization-fields{width:100%;min-width:0}}
