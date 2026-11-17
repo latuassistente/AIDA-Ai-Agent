@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../../lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 
 const acceptedTypes = new Set(["sent", "delivered", "bounced", "opened", "clicked", "replied"]);
 
