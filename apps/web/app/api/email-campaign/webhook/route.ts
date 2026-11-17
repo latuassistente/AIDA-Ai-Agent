@@ -13,7 +13,7 @@ function validSignature(rawBody: string, supplied: string, secret: string): bool
 
 export async function POST(request: Request) {
   const secret = process.env.EMAIL_CAMPAIGN_WEBHOOK_SECRET;
-  if (!secret) return NextResponse.json({ error: "Webhook non configurato." }, { status: 503 });
+  if (!secret || secret.length < 32) return NextResponse.json({ error: "Webhook non configurato o segreto troppo corto." }, { status: 503 });
   const declaredLength = Number(request.headers.get("content-length") ?? 0);
   if (declaredLength > 256 * 1024) return NextResponse.json({ error: "Payload webhook oltre 256 KB." }, { status: 413 });
   const rawBody = await request.text();
