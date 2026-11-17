@@ -41,10 +41,10 @@ export function parseRecipientCsv(csv: string): ImportedEmailRow[] {
     const legalReviewValue = get(values, find("legalreview", "stato autorizzazione")).toLowerCase();
     return {
       email: get(values, emailIndex),
-      companyName: get(values, find("companyname", "azienda", "ragione sociale")) || undefined,
-      contactName: get(values, find("contactname", "referente", "nome contatto")) || undefined,
-      legalBasis: get(values, find("legalbasis", "base giuridica")) || undefined,
-      authorizationEvidenceId: get(values, find("authorizationevidenceid", "prova autorizzazione", "id autorizzazione")) || undefined,
+      ...(get(values, find("companyname", "azienda", "ragione sociale")) ? { companyName: get(values, find("companyname", "azienda", "ragione sociale")) } : {}),
+      ...(get(values, find("contactname", "referente", "nome contatto")) ? { contactName: get(values, find("contactname", "referente", "nome contatto")) } : {}),
+      ...(get(values, find("legalbasis", "base giuridica")) ? { legalBasis: get(values, find("legalbasis", "base giuridica")) } : {}),
+      ...(get(values, find("authorizationevidenceid", "prova autorizzazione", "id autorizzazione")) ? { authorizationEvidenceId: get(values, find("authorizationevidenceid", "prova autorizzazione", "id autorizzazione")) } : {}),
       legalReview: legalReviewValue === "approved" || legalReviewValue === "approvato" ? "approved" : legalReviewValue === "rejected" || legalReviewValue === "rifiutato" ? "rejected" : "pending",
       suppressed: ["1", "true", "si", "sì", "yes"].includes(get(values, find("suppressed", "soppresso")).toLowerCase()),
       unsubscribed: ["1", "true", "si", "sì", "yes"].includes(get(values, find("unsubscribed", "disiscritto")).toLowerCase()),
