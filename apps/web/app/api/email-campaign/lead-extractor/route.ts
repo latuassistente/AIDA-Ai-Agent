@@ -66,6 +66,7 @@ export async function POST(request: Request) {
   if (!Array.isArray(leads)) return NextResponse.json({ error: "Il connettore deve restituire un array leads." }, { status: 502 });
 
   const seen = new Set<string>();
+  const seenLeadIds = new Set<string>();
   const recipients = [];
   let duplicates = 0;
   let invalid = 0;
@@ -80,8 +81,9 @@ export async function POST(request: Request) {
       continue;
     }
     const normalizedEmail = email.trim().toLowerCase();
-    if (seen.has(normalizedEmail)) { duplicates += 1; continue; }
+    if (seen.has(normalizedEmail) || seenLeadIds.has(sourceLeadId.trim())) { duplicates += 1; continue; }
     seen.add(normalizedEmail);
+    seenLeadIds.add(sourceLeadId.trim());
     const companyName = typeof lead.companyName === "string" ? lead.companyName.slice(0, 250) : undefined;
     const contactName = typeof lead.contactName === "string" ? lead.contactName.slice(0, 200) : undefined;
     const legalBasis = typeof lead.legalBasis === "string" ? lead.legalBasis.slice(0, 300) : undefined;
