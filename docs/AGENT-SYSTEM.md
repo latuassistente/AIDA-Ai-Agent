@@ -12,7 +12,7 @@ Orchestrator e Planner sono componenti centrali del runtime: non devono essere d
 1. Business Knowledge Agent — conoscenza, fonti e policy
 2. Research Agent — ricerca, analisi e verifica delle fonti autorizzate
 3. FIND Agent — scoperta di attività, record e risultati con provenienza delle fonti
-4. Lead and Prospecting Agent — qualificazione, arricchimento, verifica e deduplicazione lead
+4. B2B Lead Extractor AI (P0) — acquisizione da fonti autorizzate, arricchimento di telefoni/cellulari/email, normalizzazione, verifica della provenienza, deduplicazione ed export
 5. Business Audit Agent — audit digitale e opportunità verificabili
 6. Marketing Strategy Agent — positioning, funnel, email marketing, campaigns and measurable channel plans
 7. Content and Copy Agent — copywriting, social media strategy, editorial calendars, creative briefs and approval-ready community replies
@@ -22,7 +22,7 @@ Orchestrator e Planner sono componenti centrali del runtime: non devono essere d
 11. 3D and 4D Experience Agent — esperienze immersive
 12. Software and Automation Agent — software e automazioni
 13. QA and Test Agent — test, validazione e regressioni
-14. Omnichannel Communications Agent — flussi di comunicazione su canali autorizzati
+14. Email Campaign AI (P0) — email HTML responsive, destinatari autorizzati pre-caricati o provenienti dal B2B Lead Extractor, verifiche e invio approvato; gli altri canali restano competenze collegate
 15. Customer Support Agent — assistenza e triage ticket
 16. Voice and Telephony Agent — inbound reception, approved outbound calls, SIP/IVR routing, call summaries and callbacks
 17. Appointment and Scheduling Agent — coordinamento calendari e slot
@@ -33,7 +33,7 @@ Orchestrator e Planner sono componenti centrali del runtime: non devono essere d
 22. Delivery and Project Agent — progetti, scadenze e blocchi
 23. Analytics and BI Agent — KPI, analisi e reportistica
 24. Business Operations Agent — workflows, SOPs, task management, executive briefings, inbox triage, calendar coordination and administrative follow-up
-26. Document and Records Agent — document creation/extraction, OCR-enabled workflows, classification, version comparison and records metadata
+26. PC File Manager AI (P0) — ricerca locale per parola chiave e contenuto, classificazione e riordino dei file in cartelle autorizzate; include anche le funzioni documentali e OCR già previste
 27. Legal Support Agent — legal research, contract checklists, clause comparisons and deadlines, with qualified human review for legal conclusions
 25. Finance and Administration Agent — amministrazione e report finanziari autorizzati
 28. HR and Recruiting Agent — supporto ai processi HR con revisione umana delle decisioni
