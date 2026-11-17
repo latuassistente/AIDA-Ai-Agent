@@ -47,11 +47,11 @@ export async function POST(request: Request) {
     recipients.push({
       email: row.email.trim(),
       normalizedEmail,
-      companyName: row.companyName,
-      contactName: row.contactName,
+      ...(row.companyName ? { companyName: row.companyName } : {}),
+      ...(row.contactName ? { contactName: row.contactName } : {}),
       legalReview: row.legalReview,
-      legalBasis: row.legalBasis,
-      authorizationEvidenceId: row.authorizationEvidenceId,
+      ...(row.legalBasis ? { legalBasis: row.legalBasis } : {}),
+      ...(row.authorizationEvidenceId ? { authorizationEvidenceId: row.authorizationEvidenceId } : {}),
       suppressed: row.suppressed,
       unsubscribed: row.unsubscribed,
       verificationStatus: "unknown",
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       recipientSource: "UPLOAD",
       recipients: { create: recipients },
     },
-    select: { id: true, status: true, _count: { select: { recipients: true } } },
+    select: { id: true, status: true, recipients: { select: { id: true } } },
   });
 
   await prisma.auditLog.create({
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       action: "EMAIL_CAMPAIGN_RECIPIENTS_IMPORTED",
       decision: "ALLOW",
       target: campaign.id,
-      details: { source: "UPLOAD", imported: campaign._count.recipients, duplicates, invalid, fileName: file.name },
+      details: { source: "UPLOAD", imported: campaign.recipients.length, duplicates, invalid, fileName: file.name },
     },
   });
 
