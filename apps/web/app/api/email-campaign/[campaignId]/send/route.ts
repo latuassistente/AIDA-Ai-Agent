@@ -60,6 +60,8 @@ export async function POST(request: Request, context: Context) {
   const eligibleWhere = {
     campaignId,
     legalReview: "approved",
+    legalBasis: { not: null },
+    authorizationEvidenceId: { not: null },
     verificationStatus: "valid",
     suppressed: false,
     unsubscribed: false,
@@ -106,6 +108,7 @@ export async function POST(request: Request, context: Context) {
           },
         }),
         signal: AbortSignal.timeout(20_000),
+        redirect: "error",
       });
       if (!response.ok) { failed += 1; continue; }
       const result: unknown = await response.json();
