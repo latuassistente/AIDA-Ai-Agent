@@ -32,9 +32,9 @@ export const defaultAgents: AgentDefinition[] = [
   },
   {
     id: "lead-prospecting",
-    name: "Lead and Prospecting Agent",
-    description: "Finds, enriches, verifies and qualifies business prospects while applying source, consent, suppression and deduplication rules.",
-    capabilities: ["leads.discover", "leads.enrich", "leads.verify", "leads.deduplicate", "leads.qualify"],
+    name: "B2B Lead Extractor AI",
+    description: "Priority P0 agent for B2B company-record acquisition from authorized search engines, Google Business Profile/Maps interfaces, professional directories, public websites and permitted social sources; enriches records with source-evidenced business phones, mobile numbers and emails, normalizes every contact field, verifies provenance and confidence, deduplicates records and exports clean CSV/XLSX datasets. Uses official APIs, licensed providers or access explicitly permitted by each source; never bypasses access controls or invents contact details.",
+    capabilities: ["leads.discover", "leads.extract", "leads.source-connectors", "leads.enrich", "leads.enrich-business-phone", "leads.enrich-mobile", "leads.enrich-email", "leads.verify", "leads.source-provenance", "leads.normalize", "leads.deduplicate", "leads.quality-score", "leads.gdpr-screen", "leads.suppression-check", "leads.export-csv", "leads.export-xlsx", "leads.qualify"],
     riskLevel: "YELLOW",
   },
   {
@@ -102,9 +102,9 @@ export const defaultAgents: AgentDefinition[] = [
   },
   {
     id: "omnichannel-communications",
-    name: "Omnichannel Communications Agent",
-    description: "Coordinates approved email, SMS, WhatsApp, Telegram and social messaging workflows through configured official integrations.",
-    capabilities: ["communications.classify", "communications.draft", "communications.route", "communications.send-approved", "communications.email", "communications.whatsapp", "communications.sms", "communications.telegram", "communications.messenger", "communications.instagram", "communications.timeline"],
+    name: "Email Campaign AI",
+    description: "Priority P0 email agent that builds complete responsive HTML email demos from approved templates and brand assets, validates and segments preloaded authorized recipients or eligible leads supplied by B2B Lead Extractor, checks consent/legal basis and suppression lists, previews test sends and sends only through a configured provider after the required human approval.",
+    capabilities: ["communications.classify", "communications.draft", "communications.route", "communications.email", "communications.email-template", "communications.email-html-render", "communications.email-responsive-preview", "communications.email-brand-assets", "communications.recipient-import", "communications.recipient-authorization-check", "communications.consent-check", "communications.suppression-check", "communications.test-send", "communications.send-approved", "communications.delivery-status", "communications.unsubscribe-management", "communications.timeline", "communications.whatsapp", "communications.sms", "communications.telegram", "communications.messenger", "communications.instagram"],
     riskLevel: "YELLOW",
   },
   {
@@ -179,9 +179,9 @@ export const defaultAgents: AgentDefinition[] = [
   },
   {
     id: "document",
-    name: "Document and Records Agent",
-    description: "Creates, extracts, classifies, summarizes and validates business documents and records, including OCR-backed workflows when a configured OCR provider is available.",
-    capabilities: ["documents.create", "documents.extract", "documents.ocr", "documents.classify", "documents.summarize", "documents.template-fill", "documents.version-compare", "documents.archive-metadata", "documents.signature-workflow"],
+    name: "PC File Manager AI",
+    description: "Priority P0 local-computer file agent. Searches user-authorized folders by keyword, filename, extension, content and date; previews matches, groups and classifies files, proposes a clean folder structure and performs approved moves/renames through a scoped desktop connector. Never scans the whole PC without permission and never deletes or overwrites files by default.",
+    capabilities: ["documents.create", "documents.extract", "documents.ocr", "documents.classify", "documents.summarize", "documents.template-fill", "documents.version-compare", "documents.archive-metadata", "documents.signature-workflow", "files.local-search", "files.keyword-search", "files.content-search", "files.metadata-index", "files.duplicate-detection", "files.classify", "files.folder-plan", "files.move-approved", "files.rename-approved", "files.organize-preview", "files.undo-log", "files.scoped-access-check"],
     riskLevel: "YELLOW",
   },
   {
