@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     select: { id: true, email: true, unsubscribed: true, campaign: { select: { tenantId: true } } },
   });
   if (!recipient) return NextResponse.json({ error: "Destinatario non trovato." }, { status: 404 });
-  if (recipient.unsubscribed) return contentType.includes("application/json") ? NextResponse.json({ unsubscribed: true }) : new NextResponse("<!doctype html><html lang=\\"it\\"><meta charset=\\"utf-8\\"><title>Disiscrizione completata</title><body style=\\"font-family:Arial,sans-serif;padding:40px\\"><h1>Disiscrizione già registrata</h1></body></html>", { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+  if (recipient.unsubscribed) return contentType.includes("application/json") ? NextResponse.json({ unsubscribed: true }) : new NextResponse(`<!doctype html><html lang="it"><meta charset="utf-8"><title>Disiscrizione completata</title><body style="font-family:Arial,sans-serif;padding:40px"><h1>Disiscrizione già registrata</h1></body></html>`, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 
   await prisma.emailCampaignRecipient.update({ where: { id: recipient.id }, data: { unsubscribed: true } });
   try {
