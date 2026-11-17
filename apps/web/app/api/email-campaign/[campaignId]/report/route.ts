@@ -13,7 +13,7 @@ export async function GET(_request: Request, context: Context) {
     where: { id: campaignId, tenantId: session.tenantId },
     select: {
       id: true, name: true, status: true, createdAt: true,
-      recipients: { select: { id: true, verificationStatus: true, legalReview: true, suppressed: true, unsubscribed: true } },
+      recipients: { select: { id: true, email: true, companyName: true, contactName: true, verificationStatus: true, legalReview: true, suppressed: true, unsubscribed: true } },
       events: { select: { recipientId: true, eventType: true, occurredAt: true } },
     },
   });
@@ -49,6 +49,12 @@ export async function GET(_request: Request, context: Context) {
     pendingOutcome: Math.max(0, replies - positive - ko),
     readReceiptsAvailable: false,
     openTrackingCaveat: "Le aperture sono segnali di tracking e non provano una lettura umana.",
+    recipientOutcomes: campaign.recipients.map((recipient) => {
+      const recipientEvents = campaign.events.filter((event) => event.recipientId === recipient.id);
+      const hasReply = recipientEvents.some((event) => event.eventType === "replied");
+      const outcome = recipientEvents.some((event) => event.eventType === "positive") ? "positive" : recipientEvents.some((event) => event.eventType === "ko") ? "ko" : "pending";
+      return { id: recipient.id, email: recipient.email, companyName: recipient.companyName, contactName: recipient.contactName, hasReply, outcome };
+    }),
     eventTypes,
   });
 }
