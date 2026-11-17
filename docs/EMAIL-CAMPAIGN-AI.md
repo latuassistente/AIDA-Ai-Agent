@@ -38,6 +38,7 @@ Il report deve includere almeno:
 | Aperture rilevate | Eventi pixel/provider, non prova certa di lettura umana |
 | Clic | Click registrati dai link tracciati |
 | Risposte | Risposte rilevate tramite inbox collegata o webhook supportato |
+| Senza risposta | Destinatari con evento di invio ma senza evento di risposta |
 | Positive | Risposte classificate positive, con evidenza e classificazione registrata |
 | KO | Risposte o contatti classificati KO, con evidenza e motivazione |
 | In attesa | Risposte non ancora classificate o nessun esito registrato |
