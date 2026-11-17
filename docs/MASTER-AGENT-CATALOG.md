@@ -28,7 +28,7 @@
 | 18 | Ricerca, FIND e intelligence | `source-verification` | Source Verification Agent | Da registrare e collegare |
 | 19 | Ricerca, FIND e intelligence | `business-audit` | Business Audit Agent | Presente nel runtime (da verificare) |
 | 20 | Ricerca, FIND e intelligence | `reputation-monitoring` | Reputation Monitoring Agent | Da registrare e collegare |
-| 21 | Lead generation e CRM | `lead-prospecting` | Lead and Prospecting Agent | Presente nel runtime (da verificare) |
+| 21 | Lead generation e CRM | `lead-prospecting` | **P0 — B2B Lead Extractor AI** | Presente nel runtime; integrazioni/fonti da implementare e verificare |
 | 22 | Lead generation e CRM | `lead-scoring` | Lead Scoring Agent | Da registrare e collegare |
 | 23 | Lead generation e CRM | `lead-enrichment` | Lead Enrichment Agent | Da registrare e collegare |
 | 24 | Lead generation e CRM | `lead-deduplication` | Lead Deduplication Agent | Da registrare e collegare |
@@ -98,7 +98,7 @@
 | 88 | Software, automazione e QA | `quality-assurance` | QA and Test Agent | Presente nel runtime (da verificare) |
 | 89 | Software, automazione e QA | `release-management` | Release Management Agent | Da registrare e collegare |
 | 90 | Software, automazione e QA | `software-incident-response` | Software Incident Response Agent | Da registrare e collegare |
-| 91 | Comunicazioni e customer care | `omnichannel-communications` | Omnichannel Communications Agent | Presente nel runtime (da verificare) |
+| 91 | Comunicazioni e customer care | `omnichannel-communications` | **P0 — Email Campaign AI** | Presente nel runtime; provider email e workflow autorizzazioni da implementare e verificare |
 | 92 | Comunicazioni e customer care | `customer-support` | Customer Support Agent | Presente nel runtime (da verificare) |
 | 93 | Comunicazioni e customer care | `customer-success` | Customer Success Agent | Presente nel runtime (da verificare) |
 | 94 | Comunicazioni e customer care | `inbox-triage` | Inbox Triage Agent | Da registrare e collegare |
@@ -128,7 +128,7 @@
 | 118 | Appuntamenti, booking e ospitalità | `resource-scheduling` | Resource Scheduling Agent | Da registrare e collegare |
 | 119 | Appuntamenti, booking e ospitalità | `reminder-management` | Reminder Management Agent | Da registrare e collegare |
 | 120 | Appuntamenti, booking e ospitalità | `booking-reconciliation` | Booking Reconciliation Agent | Da registrare e collegare |
-| 121 | Documenti, knowledge records e legale | `document` | Document and Records Agent | Presente nel runtime (da verificare) |
+| 121 | Documenti, knowledge records e legale | `document` | **P0 — PC File Manager AI** | Presente nel runtime; connettore desktop locale da implementare e verificare |
 | 122 | Documenti, knowledge records e legale | `ocr-processing` | OCR Processing Agent | Da registrare e collegare |
 | 123 | Documenti, knowledge records e legale | `document-classification` | Document Classification Agent | Da registrare e collegare |
 | 124 | Documenti, knowledge records e legale | `contract-analysis` | Contract Analysis Agent | Da registrare e collegare |
