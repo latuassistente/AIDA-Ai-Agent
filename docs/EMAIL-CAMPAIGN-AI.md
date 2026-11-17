@@ -59,3 +59,14 @@ Il modulo contiene la logica pura di idoneità destinatari e aggregazione report
 - Contratti provider per verifica email, invio e sincronizzazione risposte; renderer HTML responsive con escaping e validazione URL.
 
 L'upload accetta CSV e XLSX (primo foglio; archivio ZIP con limiti di dimensione espansa). Provider di verifica, provider di invio, webhook eventi, inbox/reply sync e adapter B2B restano da integrare. L'importazione crea una campagna in bozza e non invia messaggi.
+
+
+## Ingestione eventi e classificazione delle risposte
+
+- Endpoint provider webhook: `POST /api/email-campaign/webhook`.
+- Il payload deve contenere `campaignId`, `eventId`, `type`, `email` e, facoltativamente, `occurredAt` e `textExcerpt`.
+- Tipi accettati: `sent`, `delivered`, `bounced`, `opened`, `clicked`, `replied`.
+- La richiesta deve includere `x-aida-signature: sha256=<hex>`, calcolata come HMAC-SHA256 del body HTTP grezzo con il segreto server `EMAIL_CAMPAIGN_WEBHOOK_SECRET`. Senza segreto configurato l'endpoint risponde 503; firma non valida 401.
+- Gli eventi sono associati al destinatario della campagna e deduplicati tramite ID evento del provider.
+- Le risposte possono essere classificate manualmente da un utente autenticato attraverso `PATCH /api/email-campaign/{campaignId}/outcomes`, con `recipientId` e `outcome` (`positive`, `ko` o `pending`). La classificazione è consentita soltanto dopo un evento `replied`, sostituisce l'esito precedente ed è registrata nell'audit log.
+- Il webhook è un contratto generico AIDA: il provider effettivo deve essere configurato per inviare questo schema e questa firma. Non è una connessione provider già attiva.
