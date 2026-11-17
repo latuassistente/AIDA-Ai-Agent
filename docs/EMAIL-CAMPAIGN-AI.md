@@ -50,6 +50,8 @@ Il modulo contiene la logica pura di idoneità destinatari e aggregazione report
 
 ## Prima implementazione registrata nel repository
 
+- Editor bozza per oggetto e HTML, con modello responsive iniziale, anteprima isolata tramite iframe sandbox e salvataggio autenticato/tenant-scoped; la modifica è consentita solo alle campagne in stato DRAFT.
+
 - Workspace web con selezione tra upload CSV e modalità B2B Lead Extractor (quest'ultima resta in attesa del connettore runtime).
 - Endpoint autenticato e tenant-scoped per import CSV, con limite di 5 MB e 10.000 righe, deduplicazione email e audit log.
 - Persistenza PostgreSQL per campagne, destinatari ed eventi, con migration Prisma.
