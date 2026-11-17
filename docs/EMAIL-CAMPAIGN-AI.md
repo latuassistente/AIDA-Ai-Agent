@@ -47,3 +47,13 @@ Il report deve includere almeno:
 ## Stato implementativo
 
 Il modulo contiene la logica pura di idoneità destinatari e aggregazione report. Upload UI, parsing XLSX, storage multi-tenant, verifica provider, renderer HTML, provider di invio, webhook e inbox sync richiedono i rispettivi adapter e test end-to-end prima che il servizio possa essere marcato operativo.
+
+## Prima implementazione registrata nel repository
+
+- Workspace web con selezione tra upload CSV e modalità B2B Lead Extractor (quest'ultima resta in attesa del connettore runtime).
+- Endpoint autenticato e tenant-scoped per import CSV, con limite di 5 MB e 10.000 righe, deduplicazione email e audit log.
+- Persistenza PostgreSQL per campagne, destinatari ed eventi, con migration Prisma.
+- Endpoint report tenant-scoped per inviate, consegnate, bounce, aperture rilevate, clic, risposte, positive, KO e in attesa.
+- Contratti provider per verifica email, invio e sincronizzazione risposte; renderer HTML responsive con escaping e validazione URL.
+
+L'upload attualmente accetta CSV. XLSX, provider di verifica, provider di invio, webhook eventi, inbox/reply sync e adapter B2B restano da integrare. L'importazione crea una campagna in bozza e non invia messaggi.
