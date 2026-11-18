@@ -1,16 +1,16 @@
 import { createHash } from "node:crypto";
 export type LeadSource = "google_maps" | "pagine_gialle";
 export type SourceRow = Record<string, unknown>;
-const clean=(...values:unknown[]):string|null=>{for(const v of values){if(typeof v==="string"&&v.trim())return v.trim().replace(/\\s+/g," ").slice(0,2000);if(typeof v==="number"&&Number.isFinite(v))return String(v);}return null;};
-const url=(...values:unknown[]):string|null=>{const v=clean(...values);if(!v)return null;try{const u=new URL(/^https?:\\/\\//i.test(v)?v:"https://"+v);return u.protocol==="https:"||u.protocol==="http:"?u.toString():null;}catch{return null;}};
-const phone=(...values:unknown[]):string|null=>{const v=clean(...values)?.replace(/[^\\d+]/g,"")||null;return v&&v.length>=6?v:null;};
-const email=(...values:unknown[]):string|null=>{const v=clean(...values);return v&&/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v)?v.toLowerCase():null;};
+const clean=(...values:unknown[]):string|null=>{for(const v of values){if(typeof v==="string"&&v.trim())return v.trim().replace(/\s+/g," ").slice(0,2000);if(typeof v==="number"&&Number.isFinite(v))return String(v);}return null;};
+const url=(...values:unknown[]):string|null=>{const v=clean(...values);if(!v)return null;try{const u=new URL(/^https?:\/\//i.test(v)?v:"https://"+v);return u.protocol==="https:"||u.protocol==="http:"?u.toString():null;}catch{return null;}};
+const phone=(...values:unknown[]):string|null=>{const v=clean(...values)?.replace(/[^\d+]/g,"")||null;return v&&v.length>=6?v:null;};
+const email=(...values:unknown[]):string|null=>{const v=clean(...values);return v&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)?v.toLowerCase():null;};
 const first=(r:SourceRow,keys:string[])=>clean(...keys.map(k=>r[k]));
 const list=(...values:unknown[]):string[]=>{for(const v of values){if(Array.isArray(v)){const a=v.map(x=>typeof x==="string"?x:x&&typeof x==="object"?clean((x as SourceRow).name,(x as SourceRow).title):null).filter((x):x is string=>!!x);if(a.length)return a.slice(0,30);}if(typeof v==="string"&&v.trim())return[v.trim()];}return[];};
 export function normalizeLead(r:SourceRow,source:LeadSource,retrievedAt=new Date().toISOString()){
  const companyName=first(r,["title","name","companyName","businessName","ragioneSociale","company"]);
  const legalName=first(r,["legalName","legal_name","companyLegalName","ragioneSociale","businessLegalName","registeredName"]);
- const contact=first(r,["contactName","fullName","personName","ownerName","contact"]),parts=contact?.split(/\\s+/)||[];
+ const contact=first(r,["contactName","fullName","personName","ownerName","contact"]),parts=contact?.split(/\s+/)||[];
  const sourceRecordId=first(r,["placeId","place_id","cid","id","companyId","businessId","recordId"]);
  const sourceUrl=url(r.url,r.placeUrl,r.profileUrl,r.pagineGialleUrl);
  const sourceKey=createHash("sha256").update(source+"|"+(sourceRecordId||sourceUrl||companyName||JSON.stringify(r))).digest("hex");
