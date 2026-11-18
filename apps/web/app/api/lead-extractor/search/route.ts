@@ -79,3 +79,28 @@ export async function POST(request: Request) {
   await prisma.auditLog.create({data:{tenantId:session.tenantId,actor:session.sub,action:"B2B_LEADS_SOURCE_IMPORT",decision:"ALLOW",details:{source,actor,categories,locations,received:normalized.length,inserted:created.count,duplicates:normalized.length-created.count}}});
   return NextResponse.json({source,actor,received:normalized.length,imported:created.count,duplicates:normalized.length-created.count,fields:["category","companyName","legalName","firstName","lastName","streetAddress","postalCode","city","province","region","mobilePhone","landlinePhone","email","website","socialProfiles","vatNumber"],sent:false});
 }
+
+export async function GET(request: Request) {
+  const session = await getVerifiedAidaSession();
+  if (!session) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  const params = new URL(request.url).searchParams;
+  const q = params.get("q")?.trim() || "";
+  const take = Math.min(100, Math.max(1, Number(params.get("limit")) || 50));
+  const skip = Math.max(0, Number(params.get("offset")) || 0);
+  const where = {
+    tenantId: session.tenantId,
+    ...(q ? { OR: [
+      { companyName: { contains: q, mode: "insensitive" as const } },
+      { legalName: { contains: q, mode: "insensitive" as const } },
+      { category: { contains: q, mode: "insensitive" as const } },
+      { city: { contains: q, mode: "insensitive" as const } },
+      { postalCode: { contains: q } },
+      { email: { contains: q, mode: "insensitive" as const } },
+    ] } : {}),
+  };
+  const [items, total] = await Promise.all([
+    prisma.b2BLead.findMany({ where, orderBy: { createdAt: "desc" }, take, skip }),
+    prisma.b2BLead.count({ where }),
+  ]);
+  return NextResponse.json({ items, total, limit: take, offset: skip });
+}
