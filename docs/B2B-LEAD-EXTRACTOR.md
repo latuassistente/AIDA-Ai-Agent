@@ -17,3 +17,8 @@ APIFY_API_TOKEN (server-side, mai esposto al browser); APIFY_GOOGLE_MAPS_ACTOR (
 
 ## Qualità e conformità
 I dati restituiti non sono automaticamente verificati. Fonte e data sono conservate. La Regione/Provincia non viene dedotta quando mancante; il mapping territoriale va aggiunto usando dataset affidabili e versionati. La categoria originale è conservata; la conversione in ATECO richiede mapping esplicito. La pubblicazione di email o cellulari non equivale a consenso marketing: ogni utilizzo deve avere base giuridica, informativa, minimizzazione e rispetto dei diritti. L'importazione non abilita invii email.
+
+## Stato effettivo del collegamento
+Il codice e l'interfaccia di ricerca sono presenti nel repository. Per eseguire ricerche reali è indispensabile configurare APIFY_API_TOKEN nell'ambiente server e applicare la migration Prisma 20261118130000_b2b_lead_records. Il repository non contiene né deve contenere token o credenziali. Non risultano workflow CI avviati sul commit di questa implementazione: la validazione build/typecheck e la prova end-to-end con un account Apify devono essere eseguite nell'ambiente di deployment prima di dichiarare il modulo operativo.
+
+L'Actor Google Maps e quello Pagine Gialle sono configurabili via variabili d'ambiente. I campi dipendono dalla disponibilità effettiva della fonte; l'estrazione non garantisce che ogni scheda contenga ragione sociale legale, referente nominativo, cellulare, email o sito. I dati mancanti rimangono vuoti e non sono fabbricati.

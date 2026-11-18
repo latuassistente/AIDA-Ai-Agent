@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 type Lead = {
  id:string; source:string; category:string|null; companyName:string|null; legalName:string|null;
@@ -23,7 +23,7 @@ export default function B2BLeadExtractorWorkspace() {
   const data=await response.json(); setItems(data.items||[]); setTotal(data.total||0);
  },[query]);
  useEffect(()=>{void load();},[load]);
- async function search(event:React.FormEvent<HTMLFormElement>){
+ async function search(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setMessage("");
   try{
    const response=await fetch("/api/lead-extractor/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source,categories:categories.split(",").map(x=>x.trim()).filter(Boolean),locations:locations.split(",").map(x=>x.trim()).filter(Boolean),maxRecords})});
