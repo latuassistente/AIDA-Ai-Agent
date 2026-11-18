@@ -15,7 +15,7 @@ export default function B2BLeadExtractorWorkspace() {
  const [query,setQuery]=useState("");
  const [items,setItems]=useState<Lead[]>([]);
  const [total,setTotal]=useState(0);
- const [busy,setBusy]=useState(false);
+ const [busy,setBusy]=useState(false);\n const [geoBusy,setGeoBusy]=useState(false);
  const [message,setMessage]=useState("");
  const load=useCallback(async()=>{
   const response=await fetch("/api/lead-extractor/search?q="+encodeURIComponent(query)+"&limit=50");
@@ -23,7 +23,7 @@ export default function B2BLeadExtractorWorkspace() {
   const data=await response.json(); setItems(data.items||[]); setTotal(data.total||0);
  },[query]);
  useEffect(()=>{void load();},[load]);
- async function search(event:FormEvent<HTMLFormElement>){
+ async function enrichGeo(){setGeoBusy(true);setMessage("");try{const response=await fetch("/api/lead-extractor/geocode",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({limit:10})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Arricchimento non riuscito");setMessage("OpenStreetMap: "+data.enriched+" schede arricchite · "+data.notFound+" senza corrispondenza · "+data.failed+" errori.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}finally{setGeoBusy(false);}}\n async function search(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setMessage("");
   try{
    const response=await fetch("/api/lead-extractor/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source,categories:categories.split(",").map(x=>x.trim()).filter(Boolean),locations:locations.split(",").map(x=>x.trim()).filter(Boolean),maxRecords})});
@@ -44,7 +44,7 @@ export default function B2BLeadExtractorWorkspace() {
    <button type="submit" disabled={busy}>{busy?"Ricerca in corso…":"Avvia ricerca e importa"}</button>
   </form>
   {message&&<p className="b2b-message" role="status">{message}</p>}
-  <div className="b2b-list-tools"><h3>Archivio lead</h3><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Cerca azienda, categoria, città, CAP, email"/></div>
+  <div className="b2b-list-tools"><h3>Archivio lead</h3><div className="b2b-list-actions"><button type="button" onClick={enrichGeo} disabled={geoBusy}>{geoBusy?"Arricchimento…":"Completa CAP e territorio · OpenStreetMap"}</button><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Cerca azienda, categoria, città, CAP, email"/></div></div>
   <div className="b2b-table-wrap"><table className="b2b-table"><thead><tr><th>Azienda / referente</th><th>Categoria</th><th>Indirizzo</th><th>Cellulare</th><th>Telefono fisso</th><th>Email</th><th>Sito</th><th>Fonte</th></tr></thead><tbody>
    {items.map(item=><tr key={item.id}><td><strong>{item.legalName||item.companyName||"—"}</strong><small>{[item.firstName,item.lastName].filter(Boolean).join(" ")}</small></td><td>{item.category||"—"}</td><td>{[item.streetAddress,item.postalCode,item.city,item.province,item.region].filter(Boolean).join(", ")||"—"}</td><td>{item.mobilePhone||"—"}</td><td>{item.landlinePhone||"—"}</td><td>{item.email||"—"}</td><td>{item.website?<a href={item.website} target="_blank" rel="noreferrer">Apri sito</a>:"—"}</td><td>{item.source==="google_maps"?"Google Maps":"Pagine Gialle"}</td></tr>)}
    {!items.length&&<tr><td colSpan={8}>Nessun record nell'archivio.</td></tr>}
