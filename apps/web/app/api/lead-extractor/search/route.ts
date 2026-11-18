@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../../../lib/prisma";
 import { getVerifiedAidaSession } from "../../../../lib/verified-session";
 import { normalizeLead, type LeadSource, type SourceRow } from "../../../../lib/lead-extractor-normalize";
@@ -24,7 +25,7 @@ export async function POST(request:Request){
   if(source==="google_maps"){
    // Google Maps Actor supports one locationQuery per run: execute sequentially and cap the global result count.
    for(const location of locations){const remaining=limit-rows.length;if(remaining<=0)break;
-    const batch=await runActor(actor,token,{searchStringsArray:categories,locationQuery:location.includes("Italy")?location:location+", Italy",maxCrawledPlacesPerSearch:Math.max(1,Math.ceil(remaining/categories.length)),language:"it",countryCode:"it",scrapePlaceDetailPage:true,
+    const batch=await runActor(actor,token,{searchStringsArray:categories,locationQuery:location.includes("Italy")?location:location+", Italy",maxCrawledPlacesPerSearch:Math.max(1,Math.ceil(remaining/categories.length)),language:"it",countryCode:"it",scrapePlaceDetailPage:process.env.APIFY_ENABLE_PLACE_DETAILS==="true",
      scrapeContacts:process.env.APIFY_ENABLE_CONTACT_ENRICHMENT==="true",
      scrapeSocialMediaProfiles:{facebooks:process.env.APIFY_ENABLE_SOCIAL_ENRICHMENT==="true",instagrams:process.env.APIFY_ENABLE_SOCIAL_ENRICHMENT==="true",youtubes:false,tiktoks:false,twitters:false},
      maximumLeadsEnrichmentRecords:0,verifyLeadsEnrichmentEmails:false});
@@ -33,7 +34,7 @@ export async function POST(request:Request){
   }else rows=await runActor(actor,token,{categories,locations,maxItems:limit,maxItemsPerQuery:limit,deduplicateResults:true});
  }catch(error){const message=error instanceof Error?error.message:"APIFY_ERROR";return NextResponse.json({error:message==="APIFY_DATASET_TOO_LARGE"?"Dataset Apify oltre 20 MB.":message==="APIFY_INVALID_DATASET"?"Dataset Apify non valido.":"Errore del connettore Apify: "+message},{status:502});}
  const normalized=rows.slice(0,limit).map(row=>normalizeLead(row,source,retrievedAt));if(!normalized.length)return NextResponse.json({error:"Nessun record restituito dalla fonte."},{status:422});
- const result=await prisma.b2BLead.createMany({data:normalized.map(r=>({...r,tenantId:session.tenantId})),skipDuplicates:true});
+ const result=await prisma.b2BLead.createMany({data:normalized.map(r=>({...r,tenantId:session.tenantId,sourceFields:r.sourceFields as Prisma.InputJsonObject,fieldProvenance:r.fieldProvenance as Prisma.InputJsonObject,socialProfiles:r.socialProfiles as Prisma.InputJsonObject|undefined})),skipDuplicates:true});
  await prisma.auditLog.create({data:{tenantId:session.tenantId,actor:session.sub,action:"B2B_LEADS_SOURCE_IMPORT",decision:"ALLOW",details:{source,actor,categories,locations,received:normalized.length,inserted:result.count,duplicates:normalized.length-result.count,contactEnrichmentEnabled:process.env.APIFY_ENABLE_CONTACT_ENRICHMENT==="true",socialEnrichmentEnabled:process.env.APIFY_ENABLE_SOCIAL_ENRICHMENT==="true"}}});
  return NextResponse.json({source,actor,received:normalized.length,imported:result.count,duplicates:normalized.length-result.count,sent:false});
 }
