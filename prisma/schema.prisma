@@ -8,6 +8,7 @@ datasource db {
 }
 
 model Tenant {
+  b2bLeads B2BLead[]
   id        String    @id @default(cuid())
   name      String
   createdAt DateTime  @default(now())
@@ -19,6 +20,50 @@ model Tenant {
   auditLogs AuditLog[]
   serviceConfiguration TenantServiceConfiguration?
   emailCampaigns EmailCampaign[]
+}
+
+model B2BLead {
+  id String @id @default(cuid())
+  tenantId String
+  source String
+  sourceRecordId String?
+  sourceUrl String?
+  sourceKey String
+  category String?
+  companyName String?
+  legalName String?
+  firstName String?
+  lastName String?
+  streetAddress String?
+  street String?
+  streetNumber String?
+  postalCode String?
+  city String?
+  province String?
+  region String?
+  country String @default("IT")
+  mobilePhone String?
+  landlinePhone String?
+  email String?
+  website String?
+  socialProfiles Json?
+  vatNumber String?
+  latitude Float?
+  longitude Float?
+  sourceFields Json?
+  fieldProvenance Json?
+  qualityStatus String @default("RAW")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@unique([tenantId, sourceKey])
+  @@index([tenantId, category])
+  @@index([tenantId, postalCode])
+  @@index([tenantId, city])
+  @@index([tenantId, mobilePhone])
+  @@index([tenantId, landlinePhone])
+  @@index([tenantId, email])
+  @@index([tenantId, companyName])
 }
 
 model Customer {
