@@ -51,11 +51,11 @@ export async function POST(request: Request, context: Context) {
         signal: AbortSignal.timeout(12_000),
         redirect: "error",
       });
-      if (!response.ok) { counts.failed += 1; continue; }
+      if (!response.ok) { counts.failed = (counts.failed ?? 0) + 1; continue; }
       const result: unknown = await response.json();
       if (!result || typeof result !== "object" || !("status" in result) ||
           typeof result.status !== "string" || !allowedStatuses.has(result.status)) {
-        counts.failed += 1;
+        counts.failed = (counts.failed ?? 0) + 1;
         continue;
       }
       const status = result.status;
@@ -69,7 +69,7 @@ export async function POST(request: Request, context: Context) {
       });
       counts[status] = (counts[status] ?? 0) + 1;
     } catch {
-      counts.failed += 1;
+      counts.failed = (counts.failed ?? 0) + 1;
     }
   }
 
