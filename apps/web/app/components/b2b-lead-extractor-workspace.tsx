@@ -15,7 +15,8 @@ export default function B2BLeadExtractorWorkspace() {
  const [query,setQuery]=useState("");
  const [items,setItems]=useState<Lead[]>([]);
  const [total,setTotal]=useState(0);
- const [busy,setBusy]=useState(false);\n const [geoBusy,setGeoBusy]=useState(false);
+ const [busy,setBusy]=useState(false);
+ const [geoBusy,setGeoBusy]=useState(false);
  const [message,setMessage]=useState("");
  const load=useCallback(async()=>{
   const response=await fetch("/api/lead-extractor/search?q="+encodeURIComponent(query)+"&limit=50");
@@ -23,7 +24,8 @@ export default function B2BLeadExtractorWorkspace() {
   const data=await response.json(); setItems(data.items||[]); setTotal(data.total||0);
  },[query]);
  useEffect(()=>{void load();},[load]);
- async function enrichGeo(){setGeoBusy(true);setMessage("");try{const response=await fetch("/api/lead-extractor/geocode",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({limit:10})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Arricchimento non riuscito");setMessage("OpenStreetMap: "+data.enriched+" schede arricchite · "+data.notFound+" senza corrispondenza · "+data.failed+" errori.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}finally{setGeoBusy(false);}}\n async function search(event:FormEvent<HTMLFormElement>){
+ async function enrichGeo(){setGeoBusy(true);setMessage("");try{const response=await fetch("/api/lead-extractor/geocode",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({limit:10})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Arricchimento non riuscito");setMessage("OpenStreetMap: "+data.enriched+" schede arricchite · "+data.notFound+" senza corrispondenza · "+data.failed+" errori.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}finally{setGeoBusy(false);}}
+ async function search(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setMessage("");
   try{
    const response=await fetch("/api/lead-extractor/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source,categories:categories.split(",").map(x=>x.trim()).filter(Boolean),locations:locations.split(",").map(x=>x.trim()).filter(Boolean),maxRecords})});
