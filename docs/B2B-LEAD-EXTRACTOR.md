@@ -21,3 +21,6 @@ Gli add-on a pagamento sono disabilitati per default.
 Deduplicazione attuale: tenant + fonte + ID/URL sorgente. Non fonde automaticamente Maps e Pagine Gialle: il matching cross-source richiede una fase verificabile. I dati non sono automaticamente verificati; la pubblicazione di un contatto non equivale a consenso marketing. La categoria originale è conservata; mapping ATECO separato e versionato. Nessun dato geografico viene inventato se assente.
 
 Variabile aggiuntiva: APIFY_ENABLE_PLACE_DETAILS=true abilita lo scraping delle pagine di dettaglio Google Maps. È disabilitata per default perché può aumentare i costi e i tempi. Gli add-on contatti/social e i dettagli sono quindi opt-in espliciti.
+
+## Arricchimento geografico open source
+POST /api/lead-extractor/geocode — arricchisce fino a 20 schede per richiesta usando OpenStreetMap Nominatim. Aggiorna solo CAP, Comune, Provincia, Regione, Paese e coordinate mancanti; non sovrascrive i dati già presenti e registra la provenienza. Configurazione: OSM_NOMINATIM_BASE_URL e OSM_NOMINATIM_USER_AGENT. È possibile usare un'istanza Nominatim autogestita. Se si usa un servizio pubblico, rispettare la sua policy d'uso e i limiti di frequenza; il connettore è deliberatamente limitato a 20 record per richiesta e non effettua chiamate parallele.
