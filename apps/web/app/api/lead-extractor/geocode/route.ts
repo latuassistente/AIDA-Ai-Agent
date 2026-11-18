@@ -21,8 +21,10 @@ export async function POST(request:Request){
  try{body=await request.json() as {limit?:number};}catch{return NextResponse.json({error:"JSON non valido."},{status:400});}
  const limit=Math.min(20,Math.max(1,Number(body.limit)||10));
  const leads=await prisma.b2BLead.findMany({where:{tenantId:session.tenantId,OR:[{latitude:null},{longitude:null},{postalCode:null},{region:null},{province:null}]},orderBy:{createdAt:"asc"},take:limit});
- let enriched=0,notFound=0,failed=0;
+ let enriched=0,notFound=0,failed=0,requestCount=0;
  for(const lead of leads){
+  if(requestCount>0) await new Promise(resolve=>setTimeout(resolve,1100));
+  requestCount++;
   const query=[lead.streetAddress,lead.street,lead.streetNumber,lead.postalCode,lead.city,lead.province,lead.region,"Italia"].filter(Boolean).join(", ");
   if(!query){notFound++;continue;}
   try{
