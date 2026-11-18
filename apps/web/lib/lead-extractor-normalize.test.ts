@@ -1,0 +1,7 @@
+import {describe,expect,it} from "vitest";
+import {normalizeLead} from "./lead-extractor-normalize";
+describe("B2B lead normalization",()=>{
+ it("maps business details and keeps Italian phone prefixes",()=>{const x=normalizeLead({placeId:"p1",title:"Studio Rossi",categoryName:"Commercialista",address:"Via Roma 10, Bari",phone:"+39 080 1234567",website:"studiorossi.it",email:"INFO@STUDIOROSSI.IT",postalCode:"70121",region:"Puglia",instagram:"https://instagram.com/studiorossi"},"google_maps","2026-11-18T10:00:00Z");expect(x.companyName).toBe("Studio Rossi");expect(x.category).toBe("Commercialista");expect(x.landlinePhone).toBe("+390801234567");expect(x.email).toBe("info@studiorossi.it");expect(x.website).toBe("https://studiorossi.it/");expect(x.region).toBe("Puglia");expect(x.socialProfiles).toMatchObject({instagram:"https://instagram.com/studiorossi"});});
+ it("does not invent unavailable legal names or people",()=>{const x=normalizeLead({title:"Impresa Alfa",phone:"3331234567"},"pagine_gialle");expect(x.firstName).toBeNull();expect(x.lastName).toBeNull();expect(x.legalName).toBeNull();expect(x.postalCode).toBeNull();});
+ it("preserves raw row and provenance",()=>{const row={title:"Alfa",cap:"00100",cellulare:"3331234567"};const x=normalizeLead(row,"pagine_gialle");expect(x.sourceFields).toEqual(row);expect(x.fieldProvenance).toHaveProperty("postalCode");expect(x.fieldProvenance).toHaveProperty("mobilePhone");});
+});

@@ -1,0 +1,34 @@
+import { createHash } from "node:crypto";
+export type LeadSource = "google_maps" | "pagine_gialle";
+export type SourceRow = Record<string, unknown>;
+const clean=(...values:unknown[]):string|null=>{for(const v of values){if(typeof v==="string"&&v.trim())return v.trim().replace(/\\s+/g," ").slice(0,2000);if(typeof v==="number"&&Number.isFinite(v))return String(v);}return null;};
+const url=(...values:unknown[]):string|null=>{const v=clean(...values);if(!v)return null;try{const u=new URL(/^https?:\\/\\//i.test(v)?v:"https://"+v);return u.protocol==="https:"||u.protocol==="http:"?u.toString():null;}catch{return null;}};
+const phone=(...values:unknown[]):string|null=>{const v=clean(...values)?.replace(/[^\\d+]/g,"")||null;return v&&v.length>=6?v:null;};
+const email=(...values:unknown[]):string|null=>{const v=clean(...values);return v&&/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v)?v.toLowerCase():null;};
+const first=(r:SourceRow,keys:string[])=>clean(...keys.map(k=>r[k]));
+const list=(...values:unknown[]):string[]=>{for(const v of values){if(Array.isArray(v)){const a=v.map(x=>typeof x==="string"?x:x&&typeof x==="object"?clean((x as SourceRow).name,(x as SourceRow).title):null).filter((x):x is string=>!!x);if(a.length)return a.slice(0,30);}if(typeof v==="string"&&v.trim())return[v.trim()];}return[];};
+export function normalizeLead(r:SourceRow,source:LeadSource,retrievedAt=new Date().toISOString()){
+ const companyName=first(r,["title","name","companyName","businessName","ragioneSociale","company"]);
+ const legalName=first(r,["legalName","legal_name","companyLegalName","ragioneSociale","businessLegalName","registeredName"]);
+ const contact=first(r,["contactName","fullName","personName","ownerName","contact"]),parts=contact?.split(/\\s+/)||[];
+ const sourceRecordId=first(r,["placeId","place_id","cid","id","companyId","businessId","recordId"]);
+ const sourceUrl=url(r.url,r.placeUrl,r.profileUrl,r.pagineGialleUrl);
+ const sourceKey=createHash("sha256").update(source+"|"+(sourceRecordId||sourceUrl||companyName||JSON.stringify(r))).digest("hex");
+ const cats=list(r.categoryName,r.category,r.industry,r.primaryCategory,r.categories,r.categoryNames);
+ const socials={facebook:url(r.facebook,r.facebookUrl),instagram:url(r.instagram,r.instagramUrl),linkedin:url(r.linkedin,r.linkedinUrl),youtube:url(r.youtube,r.youtubeUrl),tiktok:url(r.tiktok,r.tiktokUrl),x:url(r.twitter,r.twitterUrl,r.xUrl),other:list(r.socialProfiles,r.socials)};
+ const socialProfiles=Object.fromEntries(Object.entries(socials).filter(([,v])=>Array.isArray(v)?v.length>0:!!v));
+ const street=first(r,["street","streetName","route"]),streetNumber=first(r,["streetNumber","street_number","streetNo","houseNumber"]);
+ const streetAddress=first(r,["address","fullAddress","streetAddress","formattedAddress","addressText"]);
+ const postalCode=first(r,["postalCode","zip","zipCode","postcode","postal_code","cap"]);
+ const city=first(r,["city","municipality","comune","town","cityName"]);
+ const province=first(r,["province","provinceCode","provincia","county","countyName"]);
+ const region=first(r,["region","regione","state","stateName","administrativeAreaLevel1"]);
+ const mobilePhone=phone(r.mobile,r.mobilePhone,r.mobileNumber,r.cellulare,r.whatsappNumber,r.whatsapp);
+ const landlinePhone=phone(r.phone,r.phoneNumber,r.telephone,r.telefono,r.phoneUnformatted);
+ const mail=email(r.email,r.emailAddress,r.mail),website=url(r.website,r.websiteUrl,r.web,r.domain);
+ const latitude=typeof r.latitude==="number"?r.latitude:typeof r.lat==="number"?r.lat:null;
+ const longitude=typeof r.longitude==="number"?r.longitude:typeof r.lng==="number"?r.lng:typeof r.lon==="number"?r.lon:null;
+ const fields:Record<string,unknown>={category:cats.length?cats:null,companyName,legalName,firstName:first(r,["firstName","first_name"])||(parts.length>1?parts.slice(0,-1).join(" "):null),lastName:first(r,["lastName","last_name"])||(parts.length>1?parts.at(-1):null),streetAddress,street,streetNumber,postalCode,city,province,region,mobilePhone,landlinePhone,email:mail,website,socialProfiles,vatNumber:first(r,["vatNumber","vat","piva","partitaIva","vat_number"]),latitude,longitude};
+ const fieldProvenance=Object.fromEntries(Object.entries(fields).map(([k,v])=>[k,v==null?null:{source,retrievedAt,sourceKeys:Object.keys(r)}]));
+ return {source,sourceRecordId,sourceUrl,sourceKey,category:cats.length?cats.join(" · "):null,companyName,legalName,firstName:fields.firstName as string|null,lastName:fields.lastName as string|null,streetAddress,street,streetNumber,postalCode,city,province,region,country:first(r,["countryCode","country"])||"IT",mobilePhone,landlinePhone,email:mail,website,socialProfiles:Object.keys(socialProfiles).length?socialProfiles:undefined,vatNumber:fields.vatNumber as string|null,latitude,longitude,sourceFields:r,fieldProvenance,qualityStatus:"RAW"};
+}

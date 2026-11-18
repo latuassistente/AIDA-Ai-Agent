@@ -1,24 +1,21 @@
-# B2B Lead Extractor AI — acquisizione completa di schede aziendali
+# B2B Lead Extractor AI — fonti, normalizzazione e connettori
 
-Il modulo acquisisce schede aziendali, non soltanto email. Campi persistiti: categoria merceologica, ragione sociale/denominazione, nome e cognome del referente quando pubblicati, indirizzo, via, civico, CAP, Comune, Provincia, Regione, Paese, cellulare, telefono fisso, email, sito web, profili social, partita IVA, coordinate, ID/URL sorgente, payload originale e provenienza dei campi. I dati assenti restano null: non vengono inventati.
+Campi previsti: categoria, ragione sociale, denominazione, nome/cognome del referente se pubblicati, indirizzo, via, civico, CAP, Comune, Provincia, Regione, Paese, cellulare, telefono fisso, email, sito, social, partita IVA e coordinate. Campi assenti restano null; payload originale e provenienza sono conservati.
 
-## Fonti e connettori
-- Google Maps tramite Apify, Actor predefinito compass~crawler-google-places. Recupera schede, categorie, recapiti, indirizzi e siti; l'opzione contatti e profili social è abilitata quando disponibile.
-- Pagine Gialle tramite Apify, Actor predefinito emastra~pagine-gialle-scraper. Ricerca per categorie italiane e località e restituisce, se presenti, telefono, mobile, WhatsApp, email, sito, P.IVA, indirizzo e profili social.
-- Social: arricchimento opzionale dei profili pubblici collegati alla scheda aziendale; usare API ufficiali o provider autorizzati e rispettare termini e basi giuridiche. Non accedere a profili privati né aggirare login, paywall, CAPTCHA o controlli.
+Fonti prioritarie:
+- Google Maps tramite Actor Apify configurabile (default compass~crawler-google-places). L'Actor accetta una sola locationQuery per run: il backend esegue le località in sequenza.
+- Pagine Gialle tramite Actor Apify configurabile (default emastra~pagine-gialle-scraper), con categorie e località in array.
+- Profili social pubblici: arricchimento opzionale dei profili collegati alle schede; nessun accesso a profili privati o aggiramento di controlli.
+- Architettura predisposta a connettori open-data e API ufficiali (OpenStreetMap per riferimenti territoriali/geografici, API ufficiali per account/schede gestite).
 
-Apify orchestra gli Actor ma i connettori restano sostituibili. Google Business Profile API per le schede gestite dall'utente è un connettore distinto dalla ricerca pubblica Maps.
+API: POST /api/lead-extractor/search con source, categories, locations, maxRecords (massimo 100); GET /api/lead-extractor/search con q, limit, offset.
 
-## API
-POST /api/lead-extractor/search — autenticazione obbligatoria e isolamento tenant. Payload: { "source": "google_maps" | "pagine_gialle", "categories": ["..."], "locations": ["..."], "maxRecords": 50 }. Massimo 100 risultati per richiesta. I record sono normalizzati, salvati in PostgreSQL, deduplicati per tenant + fonte + ID/URL e registrati nell'audit log.
+Variabili server:
+APIFY_API_TOKEN (Bearer, server-side);
+APIFY_GOOGLE_MAPS_ACTOR (default compass~crawler-google-places);
+APIFY_PAGINE_GIALLE_ACTOR (default emastra~pagine-gialle-scraper);
+APIFY_ENABLE_CONTACT_ENRICHMENT=true abilita l'add-on contatti sito e può generare costi;
+APIFY_ENABLE_SOCIAL_ENRICHMENT=true abilita l'add-on social e può generare costi.
+Gli add-on a pagamento sono disabilitati per default.
 
-## Configurazione
-APIFY_API_TOKEN (server-side, mai esposto al browser); APIFY_GOOGLE_MAPS_ACTOR (opzionale, default compass~crawler-google-places); APIFY_PAGINE_GIALLE_ACTOR (opzionale, default emastra~pagine-gialle-scraper). Gli Actor possono generare costi pay-per-event: configurare budget e limiti nell'account Apify.
-
-## Qualità e conformità
-I dati restituiti non sono automaticamente verificati. Fonte e data sono conservate. La Regione/Provincia non viene dedotta quando mancante; il mapping territoriale va aggiunto usando dataset affidabili e versionati. La categoria originale è conservata; la conversione in ATECO richiede mapping esplicito. La pubblicazione di email o cellulari non equivale a consenso marketing: ogni utilizzo deve avere base giuridica, informativa, minimizzazione e rispetto dei diritti. L'importazione non abilita invii email.
-
-## Stato effettivo del collegamento
-Il codice e l'interfaccia di ricerca sono presenti nel repository. Per eseguire ricerche reali è indispensabile configurare APIFY_API_TOKEN nell'ambiente server e applicare la migration Prisma 20261118130000_b2b_lead_records. Il repository non contiene né deve contenere token o credenziali. Non risultano workflow CI avviati sul commit di questa implementazione: la validazione build/typecheck e la prova end-to-end con un account Apify devono essere eseguite nell'ambiente di deployment prima di dichiarare il modulo operativo.
-
-L'Actor Google Maps e quello Pagine Gialle sono configurabili via variabili d'ambiente. I campi dipendono dalla disponibilità effettiva della fonte; l'estrazione non garantisce che ogni scheda contenga ragione sociale legale, referente nominativo, cellulare, email o sito. I dati mancanti rimangono vuoti e non sono fabbricati.
+Deduplicazione attuale: tenant + fonte + ID/URL sorgente. Non fonde automaticamente Maps e Pagine Gialle: il matching cross-source richiede una fase verificabile. I dati non sono automaticamente verificati; la pubblicazione di un contatto non equivale a consenso marketing. La categoria originale è conservata; mapping ATECO separato e versionato. Nessun dato geografico viene inventato se assente.
