@@ -59,7 +59,7 @@ export function parseGmExtractorXlsx(buffer: Buffer): Record<string, string>[] {
     }
     return cells;
   });
-  const headers = (matrix.shift() || []).map(x => x.trim());
+  const headers = (matrix.shift() || []).map((x, index) => x.trim() || (index === 11 ? "CAP e Comune" : "Extra " + (index + 1)));
   if (!headers.some(x => x.toLowerCase() === "nome")) throw new Error("XLSX_GMEXTRACTOR_HEADERS_NOT_FOUND");
   return matrix.filter(row => row.some(value => !!value?.trim())).map(row =>
     Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""]))
