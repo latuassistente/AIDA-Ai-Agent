@@ -13,5 +13,6 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#102a43",
     lang: "it",
     categories: ["business", "productivity"],
+    icons: [{ src: "/aida-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any maskable" }],
   };
 }
