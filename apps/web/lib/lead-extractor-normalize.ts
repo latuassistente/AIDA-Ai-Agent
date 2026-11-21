@@ -15,7 +15,7 @@ export function normalizeLead(r:SourceRow,source:LeadSource,retrievedAt=new Date
  const sourceRecordId=first(r,["placeId","place_id","cid","id","companyId","businessId","recordId"]);
  const sourceUrl=url(r.url,r.placeUrl,r.profileUrl,r.pagineGialleUrl);
  const sourceKey=createHash("sha256").update(source+"|"+(sourceRecordId||sourceUrl||companyName||JSON.stringify(r))).digest("hex");
- const cats=list(r.categoryName,r.category,r.industry,r.primaryCategory,r.categories,r.categoryNames);
+ const cats=list(r.categoryName,r.category,r.industry,r.primaryCategory,r.categories,r.categoryNames,r.categoria);
  const socials={facebook:url(r.facebook,r.facebookUrl),instagram:url(r.instagram,r.instagramUrl),linkedin:url(r.linkedin,r.linkedinUrl),youtube:url(r.youtube,r.youtubeUrl),tiktok:url(r.tiktok,r.tiktokUrl),x:url(r.twitter,r.twitterUrl,r.xUrl),other:list(r.socialProfiles,r.socials)};
  const socialProfiles=Object.fromEntries(Object.entries(socials).filter(([,v])=>Array.isArray(v)?v.length>0:!!v));
  const street=first(r,["street","streetName","route"]),streetNumber=first(r,["streetNumber","street_number","streetNo","houseNumber"]);
