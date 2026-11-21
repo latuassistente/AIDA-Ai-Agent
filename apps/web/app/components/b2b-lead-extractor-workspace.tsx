@@ -16,6 +16,7 @@ const sources = [
 
 export default function B2BLeadExtractorWorkspace() {
  const [source,setSource]=useState("google_maps");
+ const [macroCategory,setMacroCategory]=useState("Ristorazione e Accoglienza");
  const [categories,setCategories]=useState("Ristoranti");
  const [locations,setLocations]=useState("Bari");
  const [region,setRegion]=useState("Puglia");
@@ -38,11 +39,14 @@ export default function B2BLeadExtractorWorkspace() {
  async function enrichGeo(){setGeoBusy(true);setMessage("");try{const response=await fetch("/api/lead-extractor/geocode",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({limit:10})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Arricchimento non riuscito");setMessage("OpenStreetMap: "+data.enriched+" schede arricchite · "+data.notFound+" senza corrispondenza · "+data.failed+" errori.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}finally{setGeoBusy(false);}}
  async function search(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setMessage("");
-  const activeSource=selectedSources.includes(source)?source:selectedSources[0];
   try{
-   const response=await fetch("/api/lead-extractor/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:activeSource,categories:categories.split(",").map(x=>x.trim()).filter(Boolean),locations:locations.split(",").map(x=>x.trim()).filter(Boolean),maxRecords:quantity,requestedFields:required})});
-   const data=await response.json();if(!response.ok)throw new Error(data.error||"Ricerca non riuscita");
-   setMessage("Record ricevuti: "+data.received+" · Nuovi: "+data.imported+" · Duplicati: "+data.duplicates);await load();
+   let received=0,imported=0,duplicates=0;
+   for(const activeSource of selectedSources){
+    const response=await fetch("/api/lead-extractor/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({source:activeSource,categories:categories.split(",").map(x=>x.trim()).filter(Boolean),locations:locations.split(",").map(x=>x.trim()).filter(Boolean),maxRecords:quantity,requestedFields:required})});
+    const data=await response.json();if(!response.ok)throw new Error(data.error||"Ricerca non riuscita");
+    received+=data.received||0;imported+=data.imported||0;duplicates+=data.duplicates||0;
+   }
+   setMessage("Record ricevuti: "+received+" · Nuovi: "+imported+" · Duplicati: "+duplicates);await load();
   }catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}
   finally{setBusy(false);}
  }
@@ -70,7 +74,7 @@ export default function B2BLeadExtractorWorkspace() {
      <section className="lead-panel" id="categories"><h3><span>♟</span> 1. TARGET</h3><p>Definisci il tuo target di ricerca</p>
       <label>Tipo di lead<select value={target} onChange={e=>setTarget(e.target.value)}><option>B2B</option><option>B2C</option><option>B2B + B2C</option></select></label>
       <label>Quantità lead<select value={quantity} onChange={e=>setQuantity(Number(e.target.value))}>{[100,250,500,1000,2000,5000].map(n=><option key={n} value={n}>{n.toLocaleString("it-IT")}</option>)}</select></label>
-      <label>Macro categoria<input value={categories} onChange={e=>setCategories(e.target.value)} placeholder="Es. Ristorazione e Accoglienza"/></label>
+      <label>Macro categoria<input value={macroCategory} onChange={e=>setMacroCategory(e.target.value)} placeholder="Es. Ristorazione e Accoglienza"/></label>
       <label>Categoria merceologica<input value={categories} onChange={e=>setCategories(e.target.value)} placeholder="Es. Ristoranti, dentisti, commercialisti"/></label>
       <label>Parole chiave (opzionale)<input placeholder="Es. cucina tipica, pizzeria, ristorante di pesce..."/></label>
       <div className="lead-hint">◎　Suggerimento AI<br/><small>Usa parole chiave specifiche per risultati più precisi.</small></div>
@@ -90,7 +94,7 @@ export default function B2BLeadExtractorWorkspace() {
       {sources.map(s=><label className="lead-source" key={s.id}><input type="checkbox" checked={selectedSources.includes(s.id)} onChange={()=>toggleSource(s.id)}/><b className={"lead-source-mark "+s.id}>{s.mark}</b><span>{s.name}</span><small>{s.state}</small></label>)}
       <div className="lead-quality">⚙　<b>Richiedi configurazione fonti</b><p>Ti aiutiamo a configurare nuove fonti autorizzate.</p></div>
      </section>
-     <div className="lead-actions"><button type="reset" className="lead-secondary" onClick={()=>{setCategories("");setLocations("");setMessage("");}}>↻　Reset</button><button type="button" className="lead-secondary" onClick={()=>setMessage("La funzione di salvataggio dei modelli sarà collegata al catalogo ricerche.")}>▣　Salva ricerca</button><button type="submit" className="lead-start" disabled={busy||!selectedSources.length}>{busy?"Ricerca in corso…":"▶　Avvia Ricerca"}</button><span className="lead-estimate">◷　Tempo stimato: 2–10 minuti</span><span className="lead-real-source">✓　Ricerca reale con fonti autorizzate</span></div>
+     <div className="lead-actions"><button type="reset" className="lead-secondary" onClick={()=>{setMacroCategory("");setCategories("");setLocations("");setMessage("");}}>↻　Reset</button><button type="button" className="lead-secondary" onClick={()=>setMessage("La funzione di salvataggio dei modelli sarà collegata al catalogo ricerche.")}>▣　Salva ricerca</button><button type="submit" className="lead-start" disabled={busy||!selectedSources.length}>{busy?"Ricerca in corso…":"▶　Avvia Ricerca"}</button><span className="lead-estimate">◷　Tempo stimato: 2–10 minuti</span><span className="lead-real-source">✓　Ricerca reale con fonti autorizzate</span></div>
     </form>
     {message&&<p className="lead-message" role="status">{message}</p>}
     <section className="lead-results" id="lead-results"><div className="lead-run-head"><div><span className="lead-spinner"/><div><b>Archivio Lead</b><small>Ricerca per categoria merceologica e città · {total.toLocaleString("it-IT")} record</small></div></div><button type="button" onClick={enrichGeo} disabled={geoBusy}>{geoBusy?"Elaborazione…":"Completa CAP e territorio"}</button></div>
