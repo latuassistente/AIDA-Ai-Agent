@@ -1,6 +1,7 @@
 import ServiceConfigurator from "./components/service-configurator";
 import EmailCampaignWorkspace from "./components/email-campaign-workspace";
 import B2BLeadExtractorWorkspace from "./components/b2b-lead-extractor-workspace";
+import PCFileManagerWorkspace from "./components/pc-file-manager-workspace";
 
 const modules = [
   {
@@ -98,6 +99,8 @@ export default function HomePage() {
         <ServiceConfigurator />
 
         <B2BLeadExtractorWorkspace />
+
+        <PCFileManagerWorkspace />
 
         <EmailCampaignWorkspace />
 
