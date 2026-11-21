@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-export type LeadSource = "google_maps" | "pagine_gialle";
+export type LeadSource = "google_maps" | "pagine_gialle" | "pagine_bianche";
 export type SourceRow = Record<string, unknown>;
 const clean=(...values:unknown[]):string|null=>{for(const v of values){if(typeof v==="string"&&v.trim())return v.trim().replace(/\s+/g," ").slice(0,2000);if(typeof v==="number"&&Number.isFinite(v))return String(v);}return null;};
 const url=(...values:unknown[]):string|null=>{const v=clean(...values);if(!v)return null;try{const u=new URL(/^https?:\/\//i.test(v)?v:"https://"+v);return u.protocol==="https:"||u.protocol==="http:"?u.toString():null;}catch{return null;}};
