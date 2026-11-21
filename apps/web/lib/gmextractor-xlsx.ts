@@ -40,21 +40,21 @@ export function parseGmExtractorXlsx(buffer: Buffer): Record<string, string>[] {
   const sheet = files.get("xl/worksheets/sheet1.xml");
   if (!sheet) throw new Error("XLSX_SHEET_NOT_FOUND");
   const shared = files.get("xl/sharedStrings.xml");
-  const strings = shared ? [...shared.toString("utf8").matchAll(/<si[\\s\\S]*?>([\\s\\S]*?)<\\/si>/g)].map(m =>
-    [...m[1].matchAll(/<t(?:\\s[^>]*)?>([\\s\\S]*?)<\\/t>/g)].map(t => decode(t[1])).join("")
+  const strings = shared ? [...shared.toString("utf8").matchAll(/<si[\s\S]*?>([\s\S]*?)<\/si>/g)].map(m =>
+    [...m[1].matchAll(/<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/g)].map(t => decode(t[1])).join("")
   ) : [];
   const xml = sheet.toString("utf8");
-  const rows = [...xml.matchAll(/<row(?:\\s[^>]*)?>([\\s\\S]*?)<\\/row>/g)];
+  const rows = [...xml.matchAll(/<row(?:\s[^>]*)?>([\s\S]*?)<\/row>/g)];
   if (!rows.length) throw new Error("XLSX_EMPTY_SHEET");
   const matrix = rows.map(row => {
     const cells: string[] = [];
-    for (const match of row[1].matchAll(/<c([^>]*)>([\\s\\S]*?)<\\/c>/g)) {
-      const ref = match[1].match(/\\br="([^"]+)"/)?.[1];
+    for (const match of row[1].matchAll(/<c([^>]*)>([\s\S]*?)<\/c>/g)) {
+      const ref = match[1].match(/\br="([^"]+)"/)?.[1];
       if (!ref) continue;
       const index = columnIndex(ref);
-      const type = match[1].match(/\\bt="([^"]+)"/)?.[1];
-      const value = match[2].match(/<v>([\\s\\S]*?)<\\/v>/)?.[1] ?? "";
-      const inline = [...match[2].matchAll(/<t(?:\\s[^>]*)?>([\\s\\S]*?)<\\/t>/g)].map(x => decode(x[1])).join("");
+      const type = match[1].match(/\bt="([^"]+)"/)?.[1];
+      const value = match[2].match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? "";
+      const inline = [...match[2].matchAll(/<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/g)].map(x => decode(x[1])).join("");
       cells[index] = type === "s" ? (strings[Number(value)] ?? "") : type === "inlineStr" ? inline : decode(value);
     }
     return cells;
