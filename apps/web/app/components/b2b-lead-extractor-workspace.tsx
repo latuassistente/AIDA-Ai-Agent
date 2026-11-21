@@ -87,7 +87,7 @@ export default function B2BLeadExtractorWorkspace() {
       <div className="lead-hint">ⓘ　Puoi selezionare più città separate da virgola o caricare una lista.</div>
      </section>
      <section className="lead-panel"><h3><span>▤</span> 3. REQUISITI DATI</h3><p>Seleziona i dati che vuoi ottenere</p>
-      {[["mobile","Cellulare"],["email","Email"],["website","Sito web"],["address","Indirizzo"],["cap","CAP verificato"],["vat","Partita IVA pubblica"],["active","Attività attiva"]].map(([id,label])=><label className="lead-check" key={id}><input type="checkbox" checked={required.includes(id)} onChange={()=>toggleRequired(id)}/>{label}</label>)}
+      {[["mobile","Cellulare"],["email","Email"],["website","Sito web"],["address","Indirizzo"],["cap","CAP verificato"],["vat","Partita IVA pubblica"],["active","Attività attiva"]].map(([id,label])=><label className="lead-check" key={id}><input type="checkbox" checked={required.includes(id!)} onChange={()=>toggleRequired(id!)}/>{label}</label>)}
       <div className="lead-quality">⚙　<b>Qualità dei risultati</b><p>Più campi selezioni, maggiore sarà la qualità dei lead, ma potrebbe ridursi la quantità di risultati.</p></div>
      </section>
      <section className="lead-panel" id="sources"><h3><span>▤</span> 4. FONTI DI RICERCA</h3><p>Scegli le fonti da utilizzare</p>
