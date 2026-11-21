@@ -20,8 +20,8 @@ export function normalizeLead(r:SourceRow,source:LeadSource,retrievedAt=new Date
  const socialProfiles=Object.fromEntries(Object.entries(socials).filter(([,v])=>Array.isArray(v)?v.length>0:!!v));
  const street=first(r,["street","streetName","route"]),streetNumber=first(r,["streetNumber","street_number","streetNo","houseNumber"]);
  const streetAddress=first(r,["address","fullAddress","streetAddress","formattedAddress","addressText","Address"]);
- const postalCode=first(r,["postalCode","zip","zipCode","postcode","postal_code","cap","CAP"]);
- const city=first(r,["city","municipality","comune","town","cityName"]);
+ const capComune=first(r,["CAP e Comune"]);\n const postalRaw=first(r,["postalCode","zip","zipCode","postcode","postal_code","cap","CAP"])||capComune;\n const postalCode=postalRaw?.match(/\\b\\d{5}\\b/)?.[0]||postalRaw;
+ const city=first(r,["city","municipality","comune","town","cityName"])||(capComune?.replace(/^\\d{5}\\s*/,"").replace(/\\s+[A-Z]{2}$/,"")||null);
  const province=first(r,["province","provinceCode","provincia","county","countyName"]);
  const region=first(r,["region","regione","state","stateName","administrativeAreaLevel1"]);
  const mobilePhone=phone(r.mobile,r.mobilePhone,r.mobileNumber,r.cellulare,r.whatsappNumber,r.whatsapp,r["Numero di cellulare"]);
