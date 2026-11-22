@@ -6,8 +6,8 @@ describe("extractDirectoryJsonLd", () => {
     const html = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Studio Esempio","telephone":"+39 080 1234567","address":{"@type":"PostalAddress","streetAddress":"Via Roma 1","postalCode":"70100","addressLocality":"Bari"}}</script>`;
     const rows = extractDirectoryJsonLd(html);
     expect(rows).toHaveLength(1);
-    expect(rows[0].name).toBe("Studio Esempio");
-    expect(rows[0].telephone).toBe("+39 080 1234567");
+    expect(rows[0]?.name).toBe("Studio Esempio");
+    expect(rows[0]?.telephone).toBe("+39 080 1234567");
   });
 
   it("walks arrays and nested ItemList elements and ignores malformed scripts", () => {
