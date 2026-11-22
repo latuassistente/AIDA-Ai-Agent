@@ -47,12 +47,12 @@ export default function B2BLeadExtractorWorkspace() {
    const firstSheet=workbook.SheetNames[0];if(!firstSheet)throw new Error("Il file non contiene fogli leggibili.");
    const rows=XLSX.utils.sheet_to_json<Record<string,unknown>>(workbook.Sheets[firstSheet],{defval:"",raw:false});
    if(!rows.length)throw new Error("Il file non contiene righe da importare.");
-   const normalizeHeader=(value:string)=>value.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+   const normalizeHeader=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
    const headers=Object.keys(rows[0]);
-   const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica","categoriamerceologica"].includes(normalizeHeader(h)));
-   const cityHeader=headers.find(h=>["citta","cittaocomune","comune","comuni","city","cities","localita","localita"].includes(normalizeHeader(h)));
+   const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica"].includes(normalizeHeader(h)));
+   const cityHeader=headers.find(h=>["citta","cittaocomune","comune","comuni","city","cities","localita"].includes(normalizeHeader(h)));
    if(!categoryHeader||!cityHeader)throw new Error("Colonne non riconosciute. Il file deve contenere le colonne Categorie e Città.");
-   const collect=(header:string)=>Array.from(new Set(rows.flatMap(row=>String(row[header]??"").split(/[;,\\n]+/).map(value=>value.trim()).filter(Boolean))));
+   const collect=(header:string)=>Array.from(new Set(rows.flatMap(row=>String(row[header]??"").split(/[;,\n]+/).map(value=>value.trim()).filter(Boolean))));
    const importedCategories=collect(categoryHeader),importedCities=collect(cityHeader);
    if(!importedCategories.length||!importedCities.length)throw new Error("Inserire almeno una categoria e una città nel file.");
    setCategories(importedCategories.join(", "));setLocations(importedCities.join(", "));
