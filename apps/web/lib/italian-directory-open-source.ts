@@ -56,7 +56,7 @@ async function robotsAllows(directory: ItalianDirectory, target: URL, userAgent:
   let applies = false;
   const disallowed: string[] = [];
   for (const raw of lines) {
-    const line = raw.split("#", 1)[0].trim();
+    const line = raw.split("#", 1)[0]?.trim() ?? "";
     const match = /^(user-agent|disallow):\s*(.*)$/i.exec(line);
     if (!match) continue;
     const directive = match[1]?.toLowerCase();
