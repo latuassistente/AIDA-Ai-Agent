@@ -1,5 +1,6 @@
 "use client";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, useCallback, useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import "./lead-extractor-workspace.css";
 
 type Lead = {
@@ -27,6 +28,7 @@ export default function B2BLeadExtractorWorkspace() {
  const [total,setTotal]=useState(0);
  const [busy,setBusy]=useState(false);
  const [geoBusy,setGeoBusy]=useState(false);
+ const [listImportBusy,setListImportBusy]=useState(false);
  const [message,setMessage]=useState("");
  const [selectedSources,setSelectedSources]=useState<string[]>(["google_maps"]);
  const [required,setRequired]=useState(["mobile","email","address","active"]);
@@ -37,6 +39,27 @@ export default function B2BLeadExtractorWorkspace() {
  },[query]);
  useEffect(()=>{void load();},[load]);
  async function enrichGeo(){setGeoBusy(true);setMessage("");try{const response=await fetch("/api/lead-extractor/geocode",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({limit:10})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Arricchimento non riuscito");setMessage("OpenStreetMap: "+data.enriched+" schede arricchite · "+data.notFound+" senza corrispondenza · "+data.failed+" errori.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Errore di connessione");}finally{setGeoBusy(false);}}
+ async function importSearchLists(event:ChangeEvent<HTMLInputElement>){
+  const file=event.target.files?.[0];if(!file)return;
+  setListImportBusy(true);setMessage("");
+  try{
+   const workbook=XLSX.read(await file.arrayBuffer(),{type:"array"});
+   const firstSheet=workbook.SheetNames[0];if(!firstSheet)throw new Error("Il file non contiene fogli leggibili.");
+   const rows=XLSX.utils.sheet_to_json<Record<string,unknown>>(workbook.Sheets[firstSheet],{defval:"",raw:false});
+   if(!rows.length)throw new Error("Il file non contiene righe da importare.");
+   const normalizeHeader=(value:string)=>value.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+   const headers=Object.keys(rows[0]);
+   const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica","categoriamerceologica"].includes(normalizeHeader(h)));
+   const cityHeader=headers.find(h=>["citta","cittaocomune","comune","comuni","city","cities","localita","localita"].includes(normalizeHeader(h)));
+   if(!categoryHeader||!cityHeader)throw new Error("Colonne non riconosciute. Il file deve contenere le colonne Categorie e Città.");
+   const collect=(header:string)=>Array.from(new Set(rows.flatMap(row=>String(row[header]??"").split(/[;,\\n]+/).map(value=>value.trim()).filter(Boolean))));
+   const importedCategories=collect(categoryHeader),importedCities=collect(cityHeader);
+   if(!importedCategories.length||!importedCities.length)throw new Error("Inserire almeno una categoria e una città nel file.");
+   setCategories(importedCategories.join(", "));setLocations(importedCities.join(", "));
+   setMessage("Liste caricate: "+importedCategories.length+" categorie e "+importedCities.length+" città. Pronte per la ricerca.");
+  }catch(error){setMessage(error instanceof Error?error.message:"Impossibile leggere il file.");}
+  finally{setListImportBusy(false);event.target.value="";}
+ }
  async function search(event:FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setMessage("");
   try{
@@ -84,7 +107,12 @@ export default function B2BLeadExtractorWorkspace() {
       <label>Regione<select value={region} onChange={e=>setRegion(e.target.value)}><option>Puglia</option><option>Campania</option><option>Lombardia</option><option>Veneto</option><option>Piemonte</option><option>Emilia-Romagna</option><option>Tutta Italia</option></select></label>
       <label>Città / Comune<input value={locations} onChange={e=>setLocations(e.target.value)} placeholder="Es. Bari, Milano, Roma"/></label>
       <label>CAP (opzionale)<input placeholder="Es. 70100"/></label>
-      <div className="lead-hint">ⓘ　Puoi selezionare più città separate da virgola o caricare una lista.</div>
+      <div className="lead-list-upload">
+       <label htmlFor="lead-search-lists">Carica categorie e città da Excel o CSV</label>
+       <input id="lead-search-lists" type="file" accept=".xlsx,.csv" onChange={importSearchLists} disabled={listImportBusy}/>
+       <small>{listImportBusy?"Lettura file in corso…":"Un solo file con le colonne Categorie e Città. Le liste compileranno i campi della ricerca."}</small>
+      </div>
+      <div className="lead-hint">ⓘ　Puoi comunque inserire più città e categorie manualmente, separate da virgola.</div>
      </section>
      <section className="lead-panel"><h3><span>▤</span> 3. REQUISITI DATI</h3><p>Seleziona i dati che vuoi ottenere</p>
       {[["mobile","Cellulare"],["email","Email"],["website","Sito web"],["address","Indirizzo"],["cap","CAP verificato"],["vat","Partita IVA pubblica"],["active","Attività attiva"]].map(([id,label])=><label className="lead-check" key={id}><input type="checkbox" checked={required.includes(id!)} onChange={()=>toggleRequired(id!)}/>{label}</label>)}
