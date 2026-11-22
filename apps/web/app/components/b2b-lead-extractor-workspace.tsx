@@ -45,10 +45,11 @@ export default function B2BLeadExtractorWorkspace() {
   try{
    const workbook=XLSX.read(await file.arrayBuffer(),{type:"array"});
    const firstSheet=workbook.SheetNames[0];if(!firstSheet)throw new Error("Il file non contiene fogli leggibili.");
-   const rows=XLSX.utils.sheet_to_json<Record<string,unknown>>(workbook.Sheets[firstSheet],{defval:"",raw:false});
-   if(!rows.length)throw new Error("Il file non contiene righe da importare.");
+   const sheet=workbook.Sheets[firstSheet];if(!sheet)throw new Error("Il primo foglio del file non è leggibile.");
+   const rows=XLSX.utils.sheet_to_json<Record<string,unknown>>(sheet,{defval:"",raw:false});
+   const firstRow=rows[0];if(!firstRow)throw new Error("Il file non contiene righe da importare.");
    const normalizeHeader=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
-   const headers=Object.keys(rows[0]);
+   const headers=Object.keys(firstRow);
    const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica"].includes(normalizeHeader(h)));
    const cityHeader=headers.find(h=>["citta","cittaocomune","comune","comuni","city","cities","localita"].includes(normalizeHeader(h)));
    if(!categoryHeader||!cityHeader)throw new Error("Colonne non riconosciute. Il file deve contenere le colonne Categorie e Città.");
