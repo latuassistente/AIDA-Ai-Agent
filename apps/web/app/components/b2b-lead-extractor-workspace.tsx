@@ -50,8 +50,8 @@ export default function B2BLeadExtractorWorkspace() {
    const firstRow=rows[0];if(!firstRow)throw new Error("Il file non contiene righe da importare.");
    const normalizeHeader=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
    const headers=Object.keys(firstRow);
-   const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica"].includes(normalizeHeader(h)));
-   const cityHeader=headers.find(h=>["citta","cittaocomune","comune","comuni","city","cities","localita"].includes(normalizeHeader(h)));
+   const categoryHeader=headers.find(h=>["categoria","categorie","category","categories","categoriamerceologica","categoriemerceologiche"].includes(normalizeHeader(h)));
+   const cityHeader=headers.find(h=>["citta","cittaocomune","cittacomune","comunecitta","comune","comuni","city","cities","localita"].includes(normalizeHeader(h)));
    if(!categoryHeader||!cityHeader)throw new Error("Colonne non riconosciute. Il file deve contenere le colonne Categorie e Città.");
    const collect=(header:string)=>Array.from(new Set(rows.flatMap(row=>String(row[header]??"").split(/[;,\n]+/).map(value=>value.trim()).filter(Boolean))));
    const importedCategories=collect(categoryHeader),importedCities=collect(cityHeader);
