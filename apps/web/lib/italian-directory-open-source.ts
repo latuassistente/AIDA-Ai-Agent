@@ -59,10 +59,13 @@ async function robotsAllows(directory: ItalianDirectory, target: URL, userAgent:
     const line = raw.split("#", 1)[0].trim();
     const match = /^(user-agent|disallow):\s*(.*)$/i.exec(line);
     if (!match) continue;
-    if (match[1].toLowerCase() === "user-agent") {
-      const agent = match[2].trim();
+    const directive = match[1]?.toLowerCase();
+    const value = match[2] ?? "";
+    if (!directive) continue;
+    if (directive === "user-agent") {
+      const agent = value.trim();
       applies = agent === "*" || userAgent.toLowerCase().includes(agent.toLowerCase());
-    } else if (applies && match[2]) disallowed.push(match[2]);
+    } else if (applies && value) disallowed.push(value);
   }
   return !disallowed.some((path) => target.pathname.startsWith(path));
 }
